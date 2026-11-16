@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#e8742a">
+<title>SSO Denmar</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SSO Denmar">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+:root{--or:#e8742a;--or2:#fbe3d2;--bg:#f5f3f0;--card:#fff;--tx:#222;--mu:#6b6b6b;--ln:#e4e0db;--ok:#1f8a4c;--okb:#ddf3e6;--am:#a86400;--amb:#fff0cc;--rd:#c0322b;--rdb:#fde0de;--bl:#2459a8;--blb:#e1ebfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+header{position:sticky;top:0;z-index:5;background:var(--or);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 12px 10px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+header .t{font-weight:700;font-size:17px}header small{display:block;font-weight:400;font-size:12px;opacity:.9}
+header button{background:#ffffff26;border:0;color:#fff;font-size:20px;padding:6px 10px;border-radius:10px}
+main{max-width:680px;margin:0 auto;padding:12px 12px 96px}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:5;display:flex;background:#fff;border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;padding:7px 0 9px;font-size:10.5px;color:var(--mu);border-radius:0}
+nav button b{display:block;font-size:20px;line-height:1.25}
+nav button.on{color:var(--or);font-weight:700}
+h2{font-size:18px;margin:2px 0 8px}h3{font-size:15px;margin:14px 0 6px;color:var(--or)}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 2px #0001}
+.muted{color:var(--mu);font-size:13px}.hint{color:var(--mu);font-size:12px;margin:4px 0}.red{color:var(--rd)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+.kpi{background:var(--card);border-radius:14px;padding:12px;box-shadow:0 1px 2px #0001}
+.kpi b{display:block;font-size:26px}.kpi span{font-size:12px;color:var(--mu)}
+.kpi.r b{color:var(--rd)}.kpi.a b{color:var(--am)}.kpi.g b{color:var(--ok)}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--ln)}
+.item:last-child{border-bottom:0}.item .col{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.tap{cursor:pointer}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.b-ok{background:var(--okb);color:var(--ok)}.b-prox{background:var(--amb);color:var(--am)}.b-venc,.b-pend,.b-no{background:var(--rdb);color:var(--rd)}.b-info{background:var(--blb);color:var(--bl)}
+.alert{padding:10px 12px;border-radius:10px;margin:8px 0;font-size:14px}
+.alert.venc{background:var(--rdb);color:var(--rd)}.alert.prox{background:var(--amb);color:var(--am)}.alert.ok{background:var(--okb);color:var(--ok)}.alert.info{background:var(--blb);color:var(--bl)}
+button,.btn,.btn2{font:inherit;border-radius:10px;border:1px solid var(--ln);background:#fff;padding:10px 14px;cursor:pointer;color:var(--tx)}
+.btn{background:var(--or);border-color:var(--or);color:#fff;font-weight:600}
+.btn2{background:var(--or2);border-color:var(--or2);color:#8a3d0a;font-weight:600}
+button.sm{padding:5px 10px;font-size:13px}button.danger{color:var(--rd);border-color:#f0b7b3}
+.full{width:100%;display:block;margin:8px 0}.big{padding:16px;font-size:17px}
+input,select,textarea{font:inherit;font-size:16px;width:100%;padding:10px;border:1px solid var(--ln);border-radius:10px;background:#fff;color:var(--tx);margin-top:4px}
+input[type=checkbox]{width:auto;margin:0 8px 0 0;transform:scale(1.2)}
+label{display:block;margin:8px 0;font-size:13px;color:var(--mu)}
+label.chk{display:flex;align-items:center;color:var(--tx);font-size:14px;margin:6px 0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.eprow{display:grid;grid-template-columns:1fr 60px auto 48px;gap:6px;align-items:center;border-bottom:1px solid var(--ln);padding:4px 0}
+.eprow input[type=number]{margin:0;padding:6px}.eprow span{font-size:12px;color:var(--mu)}
+.glist{max-height:45vh;overflow:auto;border:1px solid var(--ln);border-radius:10px;padding:4px 10px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:7px 4px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:top}th{color:var(--mu);font-weight:600}td.n,th.n{text-align:right}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:0 0 10px;padding-bottom:2px}
+.tabs button{flex:0 0 auto;padding:7px 12px;border-radius:99px;font-size:13px}
+.tabs button.on{background:var(--or);color:#fff;border-color:var(--or);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{background:#f1eeea;border-radius:8px;padding:3px 8px;font-size:12px}.chip b{font-size:13px}
+.modal{position:fixed;inset:0;z-index:10;background:#0007;display:flex;align-items:flex-end;justify-content:center}
+.modal.hidden{display:none}
+.sheet{background:var(--bg);width:100%;max-width:680px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(28px + env(safe-area-inset-bottom))}
+.sheet .card{box-shadow:none}
+.empty{text-align:center;color:var(--mu);padding:20px}
+#lock{position:fixed;inset:0;z-index:50;background:var(--or);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px}
+#lock input{max-width:220px;text-align:center;font-size:24px;letter-spacing:8px}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:10px;z-index:60;font-size:14px;display:none;max-width:90vw}
+</style>
+</head>
+<body>
+<header><div><div class="t">SSO · Marledian</div><small>DENMAR S.A. · EPP, capacitaciones y fumigación</small></div><button onclick="go('ajustes')" aria-label="Ajustes">⚙️</button></header>
+<main id="view"></main>
+<nav id="nav"></nav>
+<div id="modal" class="modal hidden" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
+<div id="toast"></div>
+<input type="file" id="foto" accept="image/*" capture="environment" hidden onchange="scanFoto(this)">
+<script src="zxing.min.js"></script>
+<script>
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+/* ================= Utilidades ================= */
+const KEY='sso_marledian_v2';
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const pad=n=>String(n).padStart(2,'0');
+const fmtD=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const hoy=()=>fmtD(new Date());
+const parseD=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const addDays=(s,n)=>{const d=parseD(s);d.setDate(d.getDate()+n);return fmtD(d)};
+const addMonths=(s,n)=>{const d=parseD(s);d.setMonth(d.getMonth()+n);return fmtD(d)};
+const diffDates=(a,b)=>Math.round((parseD(b)-parseD(a))/864e5);
+const diff=s=>diffDates(hoy(),s);
+const showD=s=>s?s.split('-').reverse().join('/'):'—';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s??'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim();
+const up=s=>norm(s).toUpperCase();
+const $=id=>document.getElementById(id);
+const diasTxt=d=>d==null?'':d<0?`hace ${-d} días`:d===0?'hoy':`en ${d} días`;
+const antig=s=>{if(!s)return'';const d=diffDates(s,hoy());return d<60?d+' días':d<730?Math.floor(d/30.4)+' meses':(d/365).toFixed(1)+' años'};
+const cedNorm=c=>{c=String(c??'').replace(/\D/g,'');return c.length===9?'0'+c:c};
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',2200)}
+const MESES={enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,setiembre:9,octubre:10,noviembre:11,diciembre:12};
+function parseFecha(v){
+  if(v==null||v==='')return '';
+  if(v instanceof Date&&!isNaN(v)){const d=new Date(v.getTime()+12*36e5);return fmtD(d)}
+  if(typeof v==='number'&&v>20000&&v<80000){const d=new Date(Math.round((v-25569)*864e5)+12*36e5);return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate())}
+  const s=norm(v);let m;
+  if(m=s.match(/(\d{4})-(\d{1,2})-(\d{1,2})/))return m[1]+'-'+pad(m[2])+'-'+pad(m[3]);
+  if(m=s.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/)){const y=m[3].length===2?'20'+m[3]:m[3];if(+m[2]<=12)return y+'-'+pad(m[2])+'-'+pad(m[1])}
+  if(m=s.match(/(\d{1,2}) de ([a-z]+) de (\d{4})/)){const mm=MESES[m[2]];if(mm)return m[3]+'-'+pad(mm)+'-'+pad(m[1])}
+  if(/^\d{5}$/.test(s))return parseFecha(+s);
+  return '';
+}
+const hashPin=p=>{let h=5381;for(const c of 'sso'+p)h=((h<<5)+h+c.charCodeAt(0))|0;return String(h)};
+
+/* ================= Datos por defecto ================= */
+const TALLAS=[['botas','Botas'],['guantes','Guantes'],['buso','Buso'],['camisa','Camisa'],['pantalon','Pantalón'],['calentador','Calentador'],['mandil','Mandil'],['zapatos','Zapatos']];
+const TL=Object.fromEntries(TALLAS);
+function defaults(){
+  const E=(id,nombre,tipo,talla,unidad,minimo)=>({id,nombre,tipo,talla,unidad,minimo,stock:{}});
+  const epps=[
+    E('botas','Botas de caucho','epp','botas','par',20),E('plant','Plantillas','epp','botas','par',20),
+    E('g_cuero','Guante de cuero','epp','guantes','par',20),E('g_showa','Guante Showa 7000','epp','guantes','par',30),
+    E('g_nit','Guantes de nitrilo','epp','guantes','par',30),E('resp','Respirador media cara','epp','','unidad',5),
+    E('filt','Filtros/cartuchos para respirador','epp','','par',10),E('traje','Traje impermeable de fumigación','epp','buso','unidad',5),
+    E('gafas','Gafas de seguridad','epp','','unidad',10),E('mand_imp','Mandil impermeable','epp','mandil','unidad',10),
+    E('masc','Mascarilla desechable','epp','','unidad',50),E('tapon','Tapones auditivos','epp','','par',10),
+    E('careta','Protector facial / careta','epp','','unidad',3),E('papel','Papel higiénico','epp','','rollo',50),
+    E('d_jean','Pantalón jean','dot','pantalon','unidad',10),E('d_calaz','Terno calentador azul','dot','calentador','unidad',10),
+    E('d_calro','Terno calentador rojo','dot','calentador','unidad',5),E('d_chzaf','Chaleco zafari rojo','dot','camisa','unidad',5),
+    E('d_mandaz','Mandil azul','dot','mandil','unidad',10),E('d_camis','Camiseta manga larga ploma','dot','camisa','unidad',10),
+    E('d_camjean','Camisa jean franja de seguridad','dot','camisa','unidad',5),E('d_panfr','Pantalón jean franja de seguridad','dot','pantalon','unidad',5),
+    E('d_buff','Buff','dot','','unidad',10),E('d_media','Media térmica','dot','','par',10),
+    E('d_gorro','Gorro tipo zafari','dot','','unidad',10),E('d_chent','Chaleco de entrenamiento','dot','buso','unidad',5)];
+  const caps=[['ind','Inducción de SSO',0],['fito','Fitosanidad – manejo seguro de agroquímicos',12],['drench','Drench – aplicación segura',12],['epp','Uso y cuidado de EPP',12],['pa','Primeros auxilios',12],['emer','Plan de emergencia y evacuación',12],['ergo','Ergonomía y levantamiento de cargas',12],['maq','Uso seguro de herramientas y maquinaria',12]]
+    .map(([id,nombre,vigencia])=>({id,nombre,vigencia}));
+  const DOT=[['d_jean',365,1],['d_camis',365,1],['d_mandaz',365,1],['d_gorro',365,1],['d_buff',180,1]];
+  const FUM=[['resp',180,1],['filt',30,1],['traje',90,1],['g_nit',15,1],['botas',180,1],['gafas',180,1]];
+  const P=(id,nombre,rot,claves,ep,caps,dot=true)=>({id,nombre,rot,claves,epps:[...ep,...(dot?DOT:[])].map(([eppId,frec,cant])=>({eppId,frec,cant})),caps});
+  const puestos=[
+    P('sup_fum','Supervisor de fumigación',0,['SUPERVISOR FUMIG','SUPERVISION FUMIG','SUPERVISOR FITO','SUPERVISOR  FUMIG'],FUM,['ind','fito','epp','pa','emer']),
+    P('aplic','Aplicador (fumigación)',6,['APLICADOR','FITOSANIDAD'],FUM,['ind','fito','epp','pa','emer']),
+    P('bomb','Bombero (fumigación)',12,['BOMBERO'],[...FUM,['mand_imp',90,1]],['ind','fito','epp','pa','emer']),
+    P('drench','Drench',0,['DRENCH'],[...FUM,['mand_imp',90,1]],['ind','drench','epp','emer']),
+    P('sup','Supervisor de cultivo',0,['SUPERVISOR','SUPERVISION'],[['botas',180,1]],['ind','epp','pa','emer']),
+    P('cort','Cortador',0,['CORTADOR'],[['botas',180,1],['plant',90,1],['g_cuero',30,1],['papel',30,1]],['ind','epp','ergo','emer']),
+    P('post','Poscosecha',0,['POSTCOSECHA','POST-COSECHA','POST COSECHA','TINTURADO','CALIDAD'],[['g_showa',15,1],['mand_imp',90,1],['botas',180,1]],['ind','epp','ergo','emer']),
+    P('transp','Transporte de flor / tractorista',0,['TRANSPORTE','TRACTOR'],[['botas',180,1],['g_cuero',30,1],['tapon',30,1]],['ind','epp','maq','emer']),
+    P('riego','Riego',0,['RIEGO'],[['botas',180,1],['g_showa',15,1]],['ind','epp','emer']),
+    P('mant','Mantenimiento',0,['MOTOGUADA','SOLDADOR','PLASTICO','JARDIN','MANTENIMIENTO','CESPED','ELECT','OBRA CIVIL'],[['botas',180,1],['g_cuero',30,1],['gafas',180,1],['tapon',30,1],['careta',180,1]],['ind','epp','maq','emer']),
+    P('monit','Monitoreo / agrobacterias',0,['MONITOREO','AGROBACTERIA','ORGANICO'],[['botas',180,1],['g_nit',15,1],['masc',7,5]],['ind','epp','emer']),
+    P('admin','Administrativo / guardias',0,['ADMIN','PORTER','GUARD','BODEGA','RECURSOS HUMANOS','MEDIC','ENFERMER','SOCIAL','AGRONOMO','SEGURIDAD Y SALUD','TECNICO DE SSO','JEFE'],[],['ind','emer'],false),
+    P('cult','Obrero de cultivo / apoyo',0,[],[['botas',180,1],['g_cuero',30,1],['papel',30,1]],['ind','epp','ergo','emer'])];
+  return {v:2,epps,caps,puestos,trab:[],entregas:[],capReg:[],sesiones:[],inspecciones:[],movs:[],rotaciones:[],
+    cfg:{horizonte:30,margen:15,ingresosMes:'',ultimoRespaldo:'',pinHash:'',importado:''}};
+}
+function load(){try{const j=JSON.parse(localStorage.getItem(KEY));if(j&&j.trab)return{...defaults(),...j}}catch(e){}return defaults()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){alert('No se pudo guardar: '+e.message)}}
+let S=load();
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+
+const T=id=>S.trab.find(x=>x.id===id);
+const PU=id=>S.puestos.find(x=>x.id===id);
+const EP=id=>S.epps.find(x=>x.id===id);
+const CA=id=>S.caps.find(x=>x.id===id);
+const activo=t=>t.estado!=='retirado';
+const pn=t=>PU(t.puestoId)?.nombre||'Sin puesto';
+const stockTotal=e=>Object.values(e.stock||{}).reduce((a,b)=>a+(+b||0),0);
+const tallaDe=(t,e)=>e&&e.talla?String((t.tallas||{})[e.talla]||'S/T'):'';
+const tallaTxt=k=>k===''?'—':k;
+function asignarPuesto(textos){
+  for(const tx of textos){const u=up(tx);if(!u)continue;for(const p of S.puestos)if((p.claves||[]).some(c=>u.includes(up(c))))return p.id}
+  return S.puestos.find(p=>p.id==='cult')?'cult':S.puestos[0]?.id||'';
+}
+
+/* ================= Cálculos ================= */
+let LM={},LC={};
+function idx(){
+  LM={};for(const x of S.entregas){const k=x.trabId+'|'+x.eppId;if(!LM[k]||x.fecha>LM[k].fecha)LM[k]=x}
+  LC={};for(const x of S.capReg){const k=x.trabId+'|'+x.capId;if(!LC[k]||(x.fecha||'')>(LC[k].fecha||''))LC[k]=x}
+}
+function eppEstado(t,tipo){
+  const p=PU(t.puestoId);if(!p)return[];
+  return p.epps.filter(pe=>{const e=EP(pe.eppId);return e&&(!tipo||e.tipo===tipo)}).map(pe=>{
+    const u=LM[t.id+'|'+pe.eppId];const prox=u?addDays(u.fecha,pe.frec):null;const dias=prox?diff(prox):null;
+    return{...pe,ult:u&&u.fecha,prox,dias,est:!u?'pend':dias<0?'venc':dias<=7?'prox':'ok'}});
+}
+function capEstado(t){
+  const p=PU(t.puestoId);if(!p)return[];
+  return p.caps.map(cid=>{const c=CA(cid);if(!c)return null;const u=LC[t.id+'|'+cid];
+    const vence=u&&u.fecha&&+c.vigencia?addMonths(u.fecha,+c.vigencia):null;
+    return{cap:c,fecha:u?u.fecha:null,tiene:!!u,vence,est:!u?'no':vence&&diff(vence)<0?'venc':vence&&diff(vence)<=30?'prox':'ok'}}).filter(Boolean);
+}
+function rotEstado(t){
+  const p=PU(t.puestoId);if(!p||!activo(t))return null;
+  if(t.rotDefinitivo)return{def:true,est:'ok',meses:p.rot};
+  if(!(+p.rot)&&!t.fechaCambio)return null;
+  const ini=t.inicioPuesto||t.ingreso;
+  const fecha=t.fechaCambio||(ini?addMonths(ini,+p.rot):null);if(!fecha)return null;
+  const dias=diff(fecha);return{fecha,dias,meses:p.rot,est:dias<0?'venc':dias<=30?'prox':'ok'};
+}
+const esFumig=t=>{const p=PU(t.puestoId);return p&&(+p.rot>0||['sup_fum','aplic','bomb'].includes(p.id))};
+function desercion(){
+  const d90=addDays(hoy(),-90);
+  const rec=S.trab.filter(t=>t.ingreso&&t.ingreso>=d90);
+  const rapido=t=>t.estado==='retirado'&&t.salida&&t.ingreso&&diffDates(t.ingreso,t.salida)<=7;
+  const rap=rec.filter(rapido);
+  const ids=new Set(S.trab.filter(rapido).map(t=>t.id));let unidades=0;S.entregas.forEach(x=>{if(ids.has(x.trabId))unidades+=x.cant});
+  const sal90=S.trab.filter(t=>t.estado==='retirado'&&t.salida&&t.salida>=d90);
+  const mot={};sal90.forEach(t=>{const m=(t.motivoSalida||'Sin motivo').toUpperCase().trim();mot[m]=(mot[m]||0)+1});
+  return{rec,nRec:rec.length,nRap:rap.length,pct:rec.length?Math.round(rap.length*100/rec.length):0,porMes:+(rec.length/3).toFixed(1),unidades,nSal:sal90.length,motivos:Object.entries(mot).sort((a,b)=>b[1]-a[1]).slice(0,5)};
+}
+function estimar(){
+  idx();const H=+S.cfg.horizonte||30,M=(+S.cfg.margen||0)/100,need={};
+  const add=(eid,tl,k,v)=>{need[eid]=need[eid]||{};need[eid][tl]=need[eid][tl]||{ren:0,nue:0};need[eid][tl][k]+=v};
+  const act=S.trab.filter(activo);
+  act.forEach(t=>eppEstado(t).forEach(e=>{
+    const fr=Math.max(1,e.frec),tl=tallaDe(t,EP(e.eppId));
+    if(e.est==='pend'){
+      // Sin registro de entrega: si es reciente se asume el kit al ingresar; si es antiguo, un cambio promedio
+      const dIng=t.ingreso?diffDates(t.ingreso,hoy()):9999;
+      if(dIng<fr){const start=fr-dIng;if(start<=H)add(e.eppId,tl,'ren',e.cant*(1+Math.floor((H-start)/fr)))}
+      else add(e.eppId,tl,'ren',e.cant*H/fr);
+      return;
+    }
+    const start=Math.max(e.dias,0);
+    if(start<=H)add(e.eppId,tl,'ren',e.cant*(1+Math.floor((H-start)/fr)));
+  }));
+  const d=desercion();
+  const porMes=S.cfg.ingresosMes!==''&&S.cfg.ingresosMes!=null?+S.cfg.ingresosMes:d.porMes;
+  const nuevos=porMes*H/30,base=d.rec.length?d.rec:act,dist={};
+  base.forEach(t=>dist[t.puestoId]=(dist[t.puestoId]||0)+1);const n=base.length||1;
+  S.puestos.forEach(p=>{
+    const esp=nuevos*(dist[p.id]||0)/n;if(!esp)return;
+    const gente=act.filter(t=>t.puestoId===p.id);const pool=gente.length?gente:act;
+    p.epps.forEach(pe=>{const e=EP(pe.eppId);if(!e)return;
+      if(!e.talla){add(e.id,'','nue',esp*pe.cant);return}
+      const cnt={};pool.forEach(t=>{const k=tallaDe(t,e);cnt[k]=(cnt[k]||0)+1});const tot=pool.length||1;
+      Object.entries(cnt).forEach(([k,c])=>add(e.id,k,'nue',esp*pe.cant*c/tot));
+    });
+  });
+  const filas=S.epps.map(e=>{
+    const tl=new Set([...Object.keys(need[e.id]||{}),...Object.keys(e.stock||{})]);
+    const det=[...tl].sort((a,b)=>(parseFloat(a)||a.charCodeAt(0)||0)-(parseFloat(b)||b.charCodeAt(0)||0)).map(k=>{const r=(need[e.id]||{})[k]||{ren:0,nue:0};const total=Math.ceil((r.ren+r.nue)*(1+M));const st=+(e.stock||{})[k]||0;return{k,ren:Math.ceil(r.ren),nue:Math.ceil(r.nue),total,stock:st,comprar:Math.max(0,total-st)}});
+    const sum=f=>det.reduce((a,x)=>a+x[f],0);
+    return{e,det,stock:stockTotal(e),ren:sum('ren'),nue:sum('nue'),total:sum('total'),comprar:sum('comprar')};
+  });
+  return{porMes,H,filas};
+}
+const LBL={ok:'Al día',prox:'Próximo',venc:'Vencido',pend:'Sin entrega',no:'No recibida'};
+const badge=(e,txt)=>`<span class="badge b-${e}">${txt||LBL[e]}</span>`;
+
+/* ================= Filtros globales ================= */
+const G={sup:'',tec:'',mod:''};
+const fG=t=>(!G.sup||t.supervisor===G.sup)&&(!G.tec||t.tecnico===G.tec)&&(!G.mod||t.modulo===G.mod);
+const valores=k=>[...new Set(S.trab.filter(activo).map(t=>t[k]).filter(Boolean))].sort();
+function filtrosGlobales(){
+  const sel=(k,lbl)=>{const v=valores(k);return v.length?`<select onchange="G.${k==='supervisor'?'sup':k==='tecnico'?'tec':'mod'}=this.value;render()"><option value="">${lbl}: todos</option>${v.map(x=>`<option ${G[k==='supervisor'?'sup':k==='tecnico'?'tec':'mod']===x?'selected':''}>${esc(x)}</option>`).join('')}</select>`:''};
+  const h=sel('supervisor','Supervisor')+sel('tecnico','Técnico')+sel('modulo','Módulo');
+  return h?`<div class="card"><div class="filters">${h}</div></div>`:'';
+}
+
+/* ================= Navegación ================= */
+const TABS=[['inicio','🏠','Inicio'],['personal','👥','Personal'],['escanear','🔍','Escanear'],['fumig','☣️','Fumigación'],['capac','🎓','Capacit.'],['stock','📦','Stock']];
+let cur='inicio';
+function render(){
+  $('nav').innerHTML=TABS.map(([k,i,l])=>`<button class="${k===cur?'on':''}" onclick="go('${k}')"><b>${i}</b>${l}</button>`).join('');
+  $('view').innerHTML=({inicio:vInicio,personal:vPersonal,escanear:vEscanear,fumig:vFumig,capac:vCapac,stock:vStock,ajustes:vAjustes})[cur]();
+}
+function go(k){cur=k;render();window.scrollTo(0,0)}
+function openModal(h){$('sheet').innerHTML=h;$('modal').classList.remove('hidden');$('sheet').scrollTop=0}
+function closeModal(){stopScan();$('modal').classList.add('hidden')}
+
+/* ================= Inicio ================= */
+function vInicio(){
+  idx();
+  const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const instalada=navigator.standalone||matchMedia('(display-mode: standalone)').matches;
+  if(!S.trab.length)return `${ios&&!instalada?avisoInstalar():''}<div class="card"><h2>Bienvenida 👋</h2><p>Para empezar, cargue la matriz de personal (Excel). La app toma solo los datos de SSO: código, cédula, nombre, actividad, bloque, supervisor, tallas, fechas y salidas. <b>No importa sueldos, cuentas, correos, direcciones ni datos médicos.</b></p><button class="btn full" onclick="go('ajustes')">Importar matriz Excel</button></div>`;
+  const act=S.trab.filter(t=>activo(t)&&fG(t));let venc=0,prox=0,sinReg=0;const aE=[],aR=[],aC=[];
+  act.forEach(t=>{
+    const ee=eppEstado(t,'epp');if(ee.length&&ee.every(e=>e.est==='pend'))sinReg++;
+    ee.forEach(e=>{if(e.est==='venc')venc++;else if(e.est==='prox')prox++;if(e.est==='venc'||e.est==='prox')aE.push({t,e})});
+    const r=rotEstado(t);if(r&&!r.def&&r.est!=='ok')aR.push({t,r});
+    const cf=capEstado(t).filter(c=>c.est==='no'||c.est==='venc');if(cf.length)aC.push({t,cf});
+  });
+  aE.sort((a,b)=>(a.e.dias??-9999)-(b.e.dias??-9999));aR.sort((a,b)=>a.r.dias-b.r.dias);
+  const bajo=S.epps.filter(e=>stockTotal(e)<=e.minimo);const d=desercion();
+  const insHoy=S.inspecciones.filter(i=>i.fecha===hoy()).length;
+  const resp=S.cfg.ultimoRespaldo,sinResp=!resp||diff(resp)<-7;
+  return `${ios&&!instalada?avisoInstalar():''}
+  ${sinResp?`<div class="alert prox">💾 ${resp?'Último respaldo: '+showD(resp)+'.':'Aún no ha hecho un respaldo.'} Vaya a ⚙️ Ajustes → Exportar respaldo.</div>`:''}
+  ${filtrosGlobales()}
+  <div class="grid">
+    <div class="kpi g"><b>${act.length}</b><span>Trabajadores activos</span></div>
+    <div class="kpi ${venc?'r':'g'}"><b>${venc}</b><span>EPP vencidos</span></div>
+    <div class="kpi a"><b>${prox}</b><span>EPP por cambiar (7 días)</span></div>
+    <div class="kpi ${aR.length?'r':'g'}"><b>${aR.length}</b><span>Rotaciones de fumigación (30 días)</span></div>
+    <div class="kpi ${aC.length?'r':'g'}"><b>${aC.length}</b><span>Con capacitación pendiente</span></div>
+    <div class="kpi ${bajo.length?'r':'g'}"><b>${bajo.length}</b><span>EPP con stock bajo</span></div>
+  </div>
+  <div class="card"><div class="actions" style="margin:0">
+    <button class="btn" onclick="go('escanear')">🔍 Escanear carnet</button>
+    <button class="btn2" onclick="formSesion()">+ Capacitación</button>
+    <button class="btn2" onclick="formTrab()">+ Trabajador</button>
+  </div><div class="muted" style="margin-top:8px">Inspecciones registradas hoy: <b>${insHoy}</b></div></div>
+  <div class="card"><h2>Rotación del personal (90 días)</h2>
+    <div>${d.nRec} ingresos · <b class="${d.pct>=20?'red':''}">${d.nRap} se fueron en 7 días o menos (${d.pct}%)</b> · ${d.nSal} salidas</div>
+    <div class="muted">EPP entregado a quienes se fueron en ≤7 días: <b>${d.unidades}</b> unidades</div>
+    ${d.motivos.length?`<div class="chips">${d.motivos.map(([m,c])=>`<span class="chip">${esc(m)} <b>${c}</b></span>`).join('')}</div>`:''}
+  </div>
+  <div class="card"><h2>☣️ Rotación de fumigación</h2>
+    ${aR.length?aR.slice(0,30).map(({t,r})=>`<div class="item tap" onclick="verTrab('${t.id}')"><div><b>${esc(t.nombre)}</b><div class="muted">${esc(pn(t))}${t.modulo?' · '+esc(t.modulo):''} · ${showD(r.fecha)} (${diasTxt(r.dias)})</div></div>${badge(r.est,r.est==='venc'?'Debe rotar':'Próximo')}</div>`).join(''):'<p class="muted">Nadie debe rotar en los próximos 30 días.</p>'}
+    <button class="full" onclick="go('fumig')">Ver todo fumigación</button>
+  </div>
+  <div class="card"><h2>🧤 Cambios de EPP</h2>
+    ${sinReg?`<div class="alert info">${sinReg} personas aún no tienen ninguna entrega de EPP registrada en la app. Se irán completando al entregar o inspeccionar (botón “Entregar kit” en la ficha).</div>`:''}
+    ${aE.length?aE.slice(0,40).map(({t,e})=>`<div class="item tap" onclick="verTrab('${t.id}')"><div><b>${esc(t.nombre)}</b><div class="muted">${esc(EP(e.eppId)?.nombre)} · ${e.prox?showD(e.prox)+' ('+diasTxt(e.dias)+')':'nunca entregado'}</div></div>${badge(e.est)}</div>`).join('')+(aE.length>40?`<p class="muted">… y ${aE.length-40} más (Ajustes → Reportes → Matriz de EPP).</p>`:''):'<p class="muted">Todo al día.</p>'}
+  </div>
+  <div class="card"><h2>🎓 Capacitaciones pendientes</h2>
+    ${aC.length?aC.slice(0,40).map(({t,cf})=>`<div class="item tap" onclick="verTrab('${t.id}')"><div><b>${esc(t.nombre)}</b><div class="muted">${cf.map(c=>esc(c.cap.nombre)).join(', ')}</div></div>${badge('no',cf.length+' pend.')}</div>`).join('')+(aC.length>40?`<p class="muted">… y ${aC.length-40} más.</p>`:''):'<p class="muted">Todo el personal tiene sus capacitaciones.</p>'}
+  </div>`;
+}
+const avisoInstalar=()=>`<div class="alert info">📲 Para usarla sin internet: toque <b>Compartir</b> (cuadro con flecha ↑) → <b>Añadir a pantalla de inicio</b>, y ábrala siempre desde ese ícono.</div>`;
+
+/* ================= Personal ================= */
+const F={q:'',puesto:'',estado:'activo'};
+function vPersonal(){
+  return `${filtrosGlobales()}<div class="card">
+    <input type="search" placeholder="Buscar por nombre, código o cédula" value="${esc(F.q)}" oninput="F.q=this.value;$('lista').innerHTML=listaPersonal()">
+    <div class="filters">
+      <select onchange="F.puesto=this.value;$('lista').innerHTML=listaPersonal()"><option value="">Todos los puestos</option>${S.puestos.map(p=>`<option value="${p.id}" ${F.puesto===p.id?'selected':''}>${esc(p.nombre)}</option>`).join('')}</select>
+      <select onchange="F.estado=this.value;$('lista').innerHTML=listaPersonal()">${[['activo','Activos'],['retirado','Retirados'],['','Todos']].map(([v,l])=>`<option value="${v}" ${F.estado===v?'selected':''}>${l}</option>`).join('')}</select>
+    </div>
+    <button class="btn full" onclick="formTrab()">+ Nuevo trabajador</button>
+  </div><div class="card" id="lista">${listaPersonal()}</div>`;
+}
+const coincide=(t,q)=>{q=norm(q);return !q||norm(t.nombre).includes(q)||norm(t.codigo).includes(q)||String(t.cedula||'').includes(q)};
+function listaPersonal(){
+  idx();
+  const l=S.trab.filter(t=>coincide(t,F.q)&&(!F.puesto||t.puestoId===F.puesto)&&(!F.estado||(F.estado==='activo'?activo(t):!activo(t)))&&(!activo(t)||fG(t))).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+  if(!l.length)return `<div class="empty">${S.trab.length?'Sin resultados.':'Aún no hay trabajadores. Importe la matriz en ⚙️ Ajustes.'}</div>`;
+  return `<div class="muted">${l.length} trabajador(es)${l.length>200?' · mostrando 200, use la búsqueda':''}</div>`+l.slice(0,200).map(filaTrab).join('');
+}
+function filaTrab(t){
+  const ee=eppEstado(t,'epp'),ce=capEstado(t),r=rotEstado(t);
+  const ev=ee.filter(e=>e.est==='venc').length,ep=ee.filter(e=>e.est==='prox').length,sr=ee.length&&ee.every(e=>e.est==='pend'),cf=ce.filter(c=>c.est==='no'||c.est==='venc').length,rr=r&&!r.def&&r.est!=='ok';
+  const b=!activo(t)?badge('pend','Retirado'):[ev?badge('venc',ev+' EPP'):'',ep?badge('prox',ep+' EPP'):'',sr?badge('info','EPP sin registro'):'',cf?badge('no',cf+' capac.'):'',rr?badge(r.est,'Rotar'):'',!ev&&!ep&&!sr&&!cf&&!rr?badge('ok'):''].join(' ');
+  return `<div class="item tap" onclick="verTrab('${t.id}')"><div><b>${esc(t.nombre)}</b><div class="muted">${esc(t.codigo||'—')} · ${esc(pn(t))}${t.bloque?' · '+esc(t.bloque):''}</div></div><div class="col">${b}</div></div>`;
+}
+
+/* ================= Ficha ================= */
+let FT='epp';
+function verTrab(id,tab){
+  if(tab)FT=tab;idx();const t=T(id);if(!t)return;const ret=!activo(t),r=rotEstado(t);
+  const tb=[['epp','🧤 EPP'],['dot','👕 Dotación'],['cap','🎓 Capacitación'],['ins','📋 Inspección'],['mas','ℹ️ Datos']];
+  const tl=t.tallas||{};
+  openModal(`
+  <div class="card">
+    <h2>${esc(t.nombre)}</h2>
+    <div class="muted">Código <b>${esc(t.codigo||'—')}</b> · C.I. <b>${esc(t.cedula||'—')}</b></div>
+    <div><b>${esc(pn(t))}</b>${t.actividad&&up(t.actividad)!==up(pn(t))?' <span class="muted">('+esc(t.actividad)+')</span>':''}</div>
+    <div class="muted">${[t.bloque,t.modulo,t.supervisor&&'Sup. '+t.supervisor].filter(Boolean).map(esc).join(' · ')}</div>
+    <div class="muted">Ingreso ${showD(t.ingreso)} (${antig(t.ingreso)})</div>
+    ${(t.roles||[]).length?`<div class="chips">${t.roles.map(x=>`<span class="badge b-info">${esc(x)}</span>`).join('')}</div>`:''}
+    ${Object.values(tl).some(Boolean)?`<div class="chips">${TALLAS.filter(([k])=>tl[k]).map(([k,l])=>`<span class="chip">${l} <b>${esc(tl[k])}</b></span>`).join('')}</div>`:''}
+    ${ret?`<div class="alert venc">Retirado el ${showD(t.salida)}${t.ingreso&&t.salida?' · trabajó '+diffDates(t.ingreso,t.salida)+' días':''}${t.motivoSalida?' · '+esc(t.motivoSalida):''}</div>`:''}
+    ${r?(r.def?`<div class="alert info">☣️ Puesto definitivo (no rota)</div>`:`<div class="alert ${r.est}">☣️ Rotación de área: ${r.est==='venc'?'<b>debió rotar el '+showD(r.fecha)+'</b>':'le toca el '+showD(r.fecha)+' ('+diasTxt(r.dias)+')'}</div>`):''}
+  </div>
+  <div class="tabs">${tb.map(([k,l])=>`<button class="${FT===k?'on':''}" onclick="verTrab('${id}','${k}')">${l}</button>`).join('')}</div>
+  <div class="card">${({epp:()=>fichaEpp(t,'epp'),dot:()=>fichaEpp(t,'dot'),cap:()=>fichaCap(t),ins:()=>fichaIns(t),mas:()=>fichaMas(t)})[FT]()}</div>
+  <div class="actions"><button onclick="closeModal()">Cerrar</button></div>`);
+}
+function fichaEpp(t,tipo){
+  const ee=eppEstado(t,tipo),ret=!activo(t);
+  const hist=S.entregas.filter(x=>x.trabId===t.id&&EP(x.eppId)?.tipo===tipo).sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,15);
+  return `${ee.length?ee.map(e=>{const ep=EP(e.eppId);return `<div class="item"><div><b>${esc(ep.nombre)}</b>${ep.talla?` <span class="chip">T. ${esc(tallaDe(t,ep))}</span>`:''}<div class="muted">${e.cant} cada ${e.frec} días · Última: ${showD(e.ult)}<br>Próximo cambio: ${showD(e.prox)} ${e.prox?'('+diasTxt(e.dias)+')':''}</div></div><div class="col">${badge(e.est)}${ret?'':`<button class="sm" onclick="formEntrega('${t.id}','${e.eppId}')">Entregar</button>`}</div></div>`}).join(''):`<p class="muted">El puesto no tiene ${tipo==='epp'?'EPP':'dotación'} asignado (⚙️ Ajustes → Puestos).</p>`}
+  ${ret?'':`<div class="actions">${ee.length?`<button class="btn" onclick="formKit('${t.id}','${tipo}')">Entregar kit</button>`:''}<button onclick="formEntrega('${t.id}','','${tipo}')">Otro ítem</button></div>`}
+  ${hist.length?`<h3>Historial</h3><table><tr><th>Fecha</th><th>Ítem</th><th class="n">Cant.</th><th>Talla</th><th></th></tr>${hist.map(x=>`<tr><td>${showD(x.fecha)}</td><td>${esc(EP(x.eppId)?.nombre||'?')}<div class="muted">${esc(x.motivo||'')}</div></td><td class="n">${x.cant}</td><td>${esc(tallaTxt(x.talla||''))}</td><td><button class="sm danger" onclick="borrarEntrega('${x.id}','${t.id}')">✕</button></td></tr>`).join('')}</table>`:''}`;
+}
+function fichaCap(t){
+  const ce=capEstado(t),ret=!activo(t);
+  const hist=S.capReg.filter(x=>x.trabId===t.id).sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+  return `${ce.length?ce.map(c=>`<div class="item"><div><b>${esc(c.cap.nombre)}</b><div class="muted">${c.tiene?'Recibida '+(c.fecha?showD(c.fecha):'(sin fecha)')+(c.vence?' · vence '+showD(c.vence):''):'No ha recibido'}</div></div><div class="col">${badge(c.est,c.est==='ok'?'Recibida':null)}${ret?'':`<button class="sm" onclick="formCap('${t.id}','${c.cap.id}')">Registrar</button>`}</div></div>`).join(''):'<p class="muted">El puesto no tiene capacitaciones requeridas.</p>'}
+  ${ret?'':`<div class="actions"><button onclick="formCap('${t.id}','')">Otra capacitación</button></div>`}
+  ${hist.length?`<h3>Historial</h3>${hist.map(x=>`<div class="muted">• ${esc(CA(x.capId)?.nombre||'?')} — ${x.fecha?showD(x.fecha):'sin fecha'}${x.nota?' · '+esc(x.nota):''}</div>`).join('')}`:''}`;
+}
+function fichaIns(t){
+  const l=S.inspecciones.filter(i=>i.trabId===t.id).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const L={si:['ok','Usa EPP completo'],parcial:['prox','Uso parcial'],no:['venc','No usa EPP']};
+  return `${activo(t)?`<button class="btn full" onclick="formInspeccion('${t.id}')">+ Registrar inspección</button>`:''}
+  ${l.length?l.map(i=>`<div class="item"><div><b>${showD(i.fecha)}</b><div class="muted">${esc(i.obs||'Sin observaciones')}</div></div>${badge(L[i.usa][0],L[i.usa][1])}</div>`).join(''):'<p class="muted">Sin inspecciones registradas.</p>'}`;
+}
+function fichaMas(t){
+  const rots=S.rotaciones.filter(r=>r.trabId===t.id).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  return `<table>
+    ${[['Actividad (matriz)',t.actividad],['Área',t.area],['Bloque',t.bloque],['Módulo',t.modulo],['Supervisor',t.supervisor],['Técnico',t.tecnico],['Género',t.genero],['Fecha de ingreso',showD(t.ingreso)],['En el puesto desde',showD(t.inicioPuesto||t.ingreso)],['Fecha de cambio (matriz)',t.rotDefinitivo?'Definitivo':showD(t.fechaCambio)]].map(([k,v])=>`<tr><th>${k}</th><td>${esc(v||'—')}</td></tr>`).join('')}
+  </table>
+  ${rots.length?`<h3>Rotaciones</h3>${rots.map(r=>`<div class="muted">• ${showD(r.fecha)}: ${esc(PU(r.de)?.nombre||'?')} → ${esc(PU(r.a)?.nombre||'?')}</div>`).join('')}`:''}
+  <div class="actions">
+    <button onclick="formTrab('${t.id}')">✏️ Editar</button>
+    ${activo(t)?`<button onclick="formRotar('${t.id}')">☣️ Rotar de puesto</button><button class="danger" onclick="formSalida('${t.id}')">Registrar salida</button>`:`<button onclick="reactivar('${t.id}')">Reactivar</button>`}
+  </div>`;
+}
+function formTrab(id,pre){
+  const t=id?T(id):{codigo:'',cedula:'',nombre:'',puestoId:'',bloque:'',supervisor:'',modulo:'',ingreso:hoy(),inicioPuesto:hoy(),tallas:{},...(pre||{})};
+  const tl=t.tallas||{};
+  openModal(`<h2>${id?'Editar':'Nuevo'} trabajador</h2>
+  <form onsubmit="return guardarTrab(event,'${id||''}')">
+    <div class="row2"><label>Código de carnet<input name="codigo" value="${esc(t.codigo)}" placeholder="DM4692" autocapitalize="characters"></label>
+    <label>Cédula<input name="cedula" inputmode="numeric" value="${esc(t.cedula)}"></label></div>
+    <label>Apellidos y nombres *<input name="nombre" required value="${esc(t.nombre)}" autocapitalize="characters"></label>
+    <label>Puesto de trabajo *<select name="puestoId" required ${id?`onchange="this.form.inicioPuesto.value=hoy()"`:''}><option value="">— Seleccione —</option>${S.puestos.map(p=>`<option value="${p.id}" ${t.puestoId===p.id?'selected':''}>${esc(p.nombre)}</option>`).join('')}</select></label>
+    <div class="row2"><label>Bloque / área<input name="bloque" value="${esc(t.bloque)}"></label><label>Módulo<input name="modulo" list="mods" value="${esc(t.modulo)}"></label></div>
+    <datalist id="mods">${valores('modulo').map(v=>`<option value="${esc(v)}">`).join('')}</datalist>
+    <label>Supervisor<input name="supervisor" list="sups" value="${esc(t.supervisor)}"></label><datalist id="sups">${valores('supervisor').map(v=>`<option value="${esc(v)}">`).join('')}</datalist>
+    <div class="row2"><label>Fecha de ingreso<input type="date" name="ingreso" value="${esc(t.ingreso)}" ${id?'':`onchange="this.form.inicioPuesto.value=this.value"`}></label>
+    <label>Inicio en el puesto<input type="date" name="inicioPuesto" value="${esc(t.inicioPuesto||t.ingreso)}"></label></div>
+    <h3>Tallas</h3><div class="row3">${TALLAS.map(([k,l])=>`<label>${l}<input name="t_${k}" value="${esc(tl[k]||'')}"></label>`).join('')}</div>
+    <div class="actions"><button class="btn">Guardar</button>${id?`<button type="button" class="danger" onclick="borrarTrab('${id}')">Eliminar</button>`:''}<button type="button" onclick="${id?`verTrab('${id}')`:'closeModal()'}">Cancelar</button></div>
+  </form>`);
+}
+function guardarTrab(ev,id){
+  ev.preventDefault();const fd=Object.fromEntries(new FormData(ev.target));
+  const f={codigo:fd.codigo.trim().toUpperCase(),cedula:cedNorm(fd.cedula),nombre:fd.nombre.trim().toUpperCase().replace(/\s+/g,' '),puestoId:fd.puestoId,bloque:fd.bloque.trim(),modulo:fd.modulo.trim().toUpperCase(),supervisor:fd.supervisor.trim(),ingreso:fd.ingreso,inicioPuesto:fd.inicioPuesto||fd.ingreso,tallas:Object.fromEntries(TALLAS.map(([k])=>[k,fd['t_'+k].trim().toUpperCase()]).filter(x=>x[1]))};
+  const dup=S.trab.find(x=>x.id!==id&&((f.codigo&&x.codigo===f.codigo)||(f.cedula&&x.cedula===f.cedula)));
+  if(dup){alert('Ya existe un trabajador con ese código o cédula: '+dup.nombre);return false}
+  if(id){const t=T(id);if(t.puestoId!==f.puestoId){S.rotaciones.push({id:uid(),trabId:id,fecha:hoy(),de:t.puestoId,a:f.puestoId});t.fechaCambio='';t.rotDefinitivo=false}Object.assign(t,f,{puestoManual:true})}
+  else{id=uid();S.trab.push({id,estado:'activo',salida:'',roles:[],puestoManual:true,...f})}
+  save();render();verTrab(id,'epp');return false;
+}
+function borrarTrab(id){
+  const t=T(id);if(!confirm(`¿Eliminar a ${t.nombre} y todo su historial? Si renunció, use “Registrar salida”.`))return;
+  S.trab=S.trab.filter(x=>x.id!==id);['entregas','capReg','inspecciones','rotaciones'].forEach(k=>S[k]=S[k].filter(x=>x.trabId!==id));
+  save();closeModal();render();
+}
+function formSalida(id){
+  const t=T(id);
+  openModal(`<h2>Registrar salida</h2><div class="muted">${esc(t.nombre)}</div>
+  <form onsubmit="return guardarSalida(event,'${id}')">
+    <label>Fecha de salida<input type="date" name="salida" value="${hoy()}" required></label>
+    <label>Motivo<select name="motivoSalida">${['Renuncia','Abandono de trabajo','Faltas consecutivas','Bajo rendimiento','Salud','Cambio de finca','Fin de contrato','Otro'].map(m=>`<option>${m}</option>`).join('')}</select></label>
+    <div class="actions"><button class="btn">Guardar</button><button type="button" onclick="verTrab('${id}')">Cancelar</button></div>
+  </form>`);
+}
+function guardarSalida(ev,id){ev.preventDefault();Object.assign(T(id),{estado:'retirado',...Object.fromEntries(new FormData(ev.target))});save();render();verTrab(id);return false}
+function reactivar(id){Object.assign(T(id),{estado:'activo',salida:'',motivoSalida:''});save();render();verTrab(id)}
+function formRotar(id){
+  const t=T(id);
+  openModal(`<h2>Rotar de puesto</h2><div class="muted">${esc(t.nombre)} · actual: ${esc(pn(t))}</div>
+  <form onsubmit="return guardarRotar(event,'${id}')">
+    <label>Nuevo puesto<select name="a">${S.puestos.filter(p=>p.id!==t.puestoId).map(p=>`<option value="${p.id}">${esc(p.nombre)}</option>`).join('')}</select></label>
+    <label>Fecha<input type="date" name="fecha" value="${hoy()}" required></label>
+    <label>Nuevo bloque / área (opcional)<input name="bloque" value="${esc(t.bloque||'')}"></label>
+    <div class="actions"><button class="btn">Guardar rotación</button><button type="button" onclick="verTrab('${id}')">Cancelar</button></div>
+  </form>`);
+}
+function guardarRotar(ev,id){
+  ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target)),t=T(id);
+  S.rotaciones.push({id:uid(),trabId:id,fecha:f.fecha,de:t.puestoId,a:f.a});
+  Object.assign(t,{puestoId:f.a,inicioPuesto:f.fecha,fechaCambio:'',rotDefinitivo:false,bloque:f.bloque.trim(),puestoManual:true});
+  save();render();verTrab(id,'epp');return false;
+}
+
+/* ================= Entregas ================= */
+function formEntrega(tid,eppId,tipo){
+  idx();const t=T(tid),p=PU(t.puestoId),pe=p&&p.epps.find(x=>x.eppId===eppId);
+  const lista=S.epps.filter(e=>!tipo||e.tipo===tipo||e.id===eppId);const e0=EP(eppId)||lista[0];
+  const def=eppId&&!LM[tid+'|'+eppId]?'Nuevo ingreso':'Cambio programado';
+  openModal(`<h2>Entregar</h2><div class="muted">${esc(t.nombre)}</div>
+  <form onsubmit="return guardarEntrega(event,'${tid}')">
+    <label>Ítem<select name="eppId" onchange="this.form.talla.value=TALLAW[this.value]||''">${lista.map(e=>`<option value="${e.id}" ${e.id===e0.id?'selected':''}>${esc(e.nombre)} (stock ${stockTotal(e)})</option>`).join('')}</select></label>
+    <div class="row3"><label>Cantidad<input type="number" name="cant" min="1" value="${pe?pe.cant:1}"></label><label>Talla<input name="talla" value="${esc(tallaDe(t,e0)==='S/T'?'':tallaDe(t,e0))}"></label><label>Fecha<input type="date" name="fecha" value="${hoy()}" required></label></div>
+    <label>Motivo<select name="motivo">${['Cambio programado','Nuevo ingreso','Daño o desgaste','Pérdida','Otro'].map(m=>`<option ${m===def?'selected':''}>${m}</option>`).join('')}</select></label>
+    <div class="actions"><button class="btn">Guardar entrega</button><button type="button" onclick="verTrab('${tid}')">Cancelar</button></div>
+  </form>`);
+  window.TALLAW=Object.fromEntries(lista.map(e=>{const v=tallaDe(t,e);return[e.id,v==='S/T'?'':v]}));
+}
+function descontar(e,talla,cant){e.stock=e.stock||{};const k=e.talla?(talla||'S/T'):'';e.stock[k]=(+e.stock[k]||0)-cant}
+function guardarEntrega(ev,tid){
+  ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target));const cant=Math.max(1,+f.cant||1);const e=EP(f.eppId);const talla=e.talla?f.talla.trim().toUpperCase():'';
+  const k=e.talla?(talla||'S/T'):'';const hay=+(e.stock||{})[k]||0;
+  if(hay<cant&&!confirm(`Stock insuficiente de ${e.nombre}${talla?' talla '+talla:''} (hay ${hay}). ¿Registrar de todos modos?`))return false;
+  S.entregas.push({id:uid(),trabId:tid,eppId:e.id,fecha:f.fecha,cant,talla,motivo:f.motivo});descontar(e,talla,cant);
+  save();render();verTrab(tid);toast('Entrega registrada');return false;
+}
+function formKit(tid,tipo){
+  idx();const t=T(tid),p=PU(t.puestoId);const ee=eppEstado(t,tipo);
+  openModal(`<h2>Entregar kit · ${tipo==='epp'?'EPP':'Dotación'}</h2><div class="muted">${esc(t.nombre)} · ${esc(p.nombre)}</div>
+  <form onsubmit="return guardarKit(event,'${tid}','${tipo}')">
+    ${ee.map(e=>{const ep=EP(e.eppId),tl=tallaDe(t,ep),k=ep.talla?tl:'',hay=+(ep.stock||{})[k]||0;return `<label class="chk"><input type="checkbox" name="i" value="${e.eppId}" ${e.est!=='ok'?'checked':''}> ${e.cant} × ${esc(ep.nombre)}${ep.talla?' · T. '+esc(tl):''} <span class="muted">&nbsp;(stock ${hay}) ${e.est!=='ok'?'· '+LBL[e.est]:''}</span></label>`}).join('')}
+    <label>Fecha<input type="date" name="fecha" value="${hoy()}" required></label>
+    <div class="actions"><button class="btn">Entregar marcados</button><button type="button" onclick="verTrab('${tid}')">Cancelar</button></div>
+  </form>`);
+}
+function guardarKit(ev,tid,tipo){
+  ev.preventDefault();const fd=new FormData(ev.target),ids=fd.getAll('i'),t=T(tid),p=PU(t.puestoId);
+  if(!ids.length){alert('Marque al menos un ítem.');return false}
+  const nuevo=!p.epps.some(pe=>LM[tid+'|'+pe.eppId]);
+  ids.forEach(eid=>{const pe=p.epps.find(x=>x.eppId===eid),e=EP(eid),tl=e.talla?tallaDe(t,e):'';
+    S.entregas.push({id:uid(),trabId:tid,eppId:eid,fecha:fd.get('fecha'),cant:pe.cant,talla:tl==='S/T'?'':tl,motivo:nuevo?'Nuevo ingreso':'Cambio programado'});descontar(e,tl==='S/T'?'':tl,pe.cant)});
+  save();render();verTrab(tid);toast(ids.length+' ítems entregados');return false;
+}
+function borrarEntrega(eid,tid){
+  const x=S.entregas.find(e=>e.id===eid);if(!x||!confirm('¿Anular esta entrega? Vuelve al stock.'))return;
+  const e=EP(x.eppId);if(e&&!x.importado)descontar(e,x.talla,-x.cant);S.entregas=S.entregas.filter(e=>e.id!==eid);save();render();verTrab(tid);
+}
+
+/* ================= Inspecciones ================= */
+function formInspeccion(tid){
+  const t=T(tid);
+  openModal(`<h2>Inspección</h2><div class="muted">${esc(t.nombre)} · ${esc(pn(t))}</div>
+  <form onsubmit="return guardarInspeccion(event,'${tid}')">
+    <label>¿Usa el EPP del puesto?<select name="usa"><option value="si">Sí, completo</option><option value="parcial">Parcialmente</option><option value="no">No</option></select></label>
+    <label>Fecha<input type="date" name="fecha" value="${hoy()}"></label>
+    <label>Observación<textarea name="obs" rows="3" placeholder="Ej.: sin gafas, guantes rotos, botas en mal estado…"></textarea></label>
+    <div class="actions"><button class="btn">Guardar</button><button type="button" onclick="verTrab('${tid}','ins')">Cancelar</button></div>
+  </form>`);
+}
+function guardarInspeccion(ev,tid){ev.preventDefault();S.inspecciones.push({id:uid(),trabId:tid,...Object.fromEntries(new FormData(ev.target))});save();render();verTrab(tid,'ins');toast('Inspección guardada');return false}
+
+/* ================= Capacitaciones ================= */
+function vCapac(){
+  const ses=[...S.sesiones].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  idx();const act=S.trab.filter(activo);
+  const cob=S.caps.map(c=>{const req=act.filter(t=>PU(t.puestoId)?.caps.includes(c.id));const ok=req.filter(t=>LC[t.id+'|'+c.id]);return{c,req:req.length,ok:ok.length}}).filter(x=>x.req);
+  return `<div class="card"><h2>Capacitaciones</h2>
+    <p class="hint">Cree la sesión (tema, fecha, lugar, horas, instructor) y marque la asistencia escaneando los carnets.</p>
+    <button class="btn full" onclick="formSesion()">+ Nueva sesión de capacitación</button></div>
+  <div class="card"><h2>Cobertura del personal activo</h2>
+    ${cob.map(x=>{const pc=Math.round(x.ok*100/x.req);return `<div class="item"><div><b>${esc(x.c.nombre)}</b><div class="muted">${x.ok} de ${x.req} personas</div></div>${badge(pc>=90?'ok':pc>=60?'prox':'venc',pc+'%')}</div>`}).join('')||'<p class="muted">Sin datos.</p>'}
+  </div>
+  <div class="card"><h2>Sesiones</h2>
+    ${ses.length?ses.map(s=>`<div class="item tap" onclick="verSesion('${s.id}')"><div><b>${esc(CA(s.capId)?.nombre||'?')}</b><div class="muted">${showD(s.fecha)}${s.lugar?' · '+esc(s.lugar):''}${s.instructor?' · '+esc(s.instructor):''}</div></div>${badge('info',S.capReg.filter(r=>r.sesionId===s.id).length+' asist.')}</div>`).join(''):'<p class="muted">Aún no hay sesiones.</p>'}
+  </div>
+  <div class="card"><h2>Catálogo</h2>${S.caps.map(c=>`<div class="item tap" onclick="formCapCat('${c.id}')"><div><b>${esc(c.nombre)}</b><div class="muted">${+c.vigencia?'Vigencia '+c.vigencia+' meses':'No vence'}</div></div><span>›</span></div>`).join('')}<button class="btn2 full" onclick="formCapCat()">+ Nueva capacitación</button></div>`;
+}
+function formSesion(id){
+  const s=id?S.sesiones.find(x=>x.id===id):{capId:S.caps[0]?.id,fecha:hoy(),lugar:'',horas:'',instructor:'',objetivo:''};
+  openModal(`<h2>${id?'Editar':'Nueva'} sesión</h2>
+  <form onsubmit="return guardarSesion(event,'${id||''}')">
+    <label>Tema / capacitación<select name="capId">${S.caps.map(c=>`<option value="${c.id}" ${c.id===s.capId?'selected':''}>${esc(c.nombre)}</option>`).join('')}</select></label>
+    <div class="row2"><label>Fecha<input type="date" name="fecha" value="${s.fecha}" required></label><label>Horas<input name="horas" inputmode="decimal" value="${esc(s.horas)}"></label></div>
+    <label>Lugar<input name="lugar" value="${esc(s.lugar)}"></label>
+    <label>Instructor<input name="instructor" value="${esc(s.instructor)}"></label>
+    <label>Objetivo / temas tratados<textarea name="objetivo" rows="3">${esc(s.objetivo)}</textarea></label>
+    <div class="actions"><button class="btn">Guardar</button>${id?`<button type="button" class="danger" onclick="borrarSesion('${id}')">Eliminar</button>`:''}<button type="button" onclick="${id?`verSesion('${id}')`:'closeModal()'}">Cancelar</button></div>
+  </form>`);
+}
+function guardarSesion(ev,id){
+  ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target));
+  if(id){Object.assign(S.sesiones.find(x=>x.id===id),f);S.capReg.filter(r=>r.sesionId===id).forEach(r=>{r.capId=f.capId;r.fecha=f.fecha})}
+  else{id=uid();S.sesiones.push({id,...f})}
+  save();render();verSesion(id);return false;
+}
+function borrarSesion(id){if(!confirm('¿Eliminar la sesión y su lista de asistencia?'))return;S.sesiones=S.sesiones.filter(x=>x.id!==id);S.capReg=S.capReg.filter(r=>r.sesionId!==id);save();closeModal();render()}
+function verSesion(id){
+  const s=S.sesiones.find(x=>x.id===id);if(!s)return;const as=S.capReg.filter(r=>r.sesionId===id).map(r=>({r,t:T(r.trabId)})).filter(x=>x.t);
+  openModal(`<div class="card"><h2>${esc(CA(s.capId)?.nombre)}</h2>
+    <div class="muted">${showD(s.fecha)}${s.horas?' · '+esc(s.horas)+' h':''}${s.lugar?' · '+esc(s.lugar):''}${s.instructor?' · Instructor: '+esc(s.instructor):''}</div>
+    ${s.objetivo?`<p>${esc(s.objetivo)}</p>`:''}
+    <div class="actions"><button class="btn" onclick="scanSesion('${id}')">📷 Escanear asistentes</button>${tieneLector?`<button onclick="PHOTO_CB=v=>agregarAsistente('${id}',v,true);$('foto').click()">Foto</button>`:''}<button onclick="formSesion('${id}')">Editar</button><button onclick="exportarAsistencia('${id}')">Exportar</button></div>
+    <input type="search" placeholder="Agregar por nombre, código o cédula" oninput="$('sesBus').innerHTML=buscarParaSesion('${id}',this.value)"><div id="sesBus"></div>
+  </div>
+  <div class="card"><h3 style="margin-top:0">Asistentes (${as.length})</h3>
+    ${as.length?as.map(({r,t},i)=>`<div class="item"><div>${i+1}. <b>${esc(t.nombre)}</b><div class="muted">${esc(t.codigo||'')} · ${esc(pn(t))}</div></div><button class="sm danger" onclick="quitarAsistente('${r.id}','${id}')">✕</button></div>`).join(''):'<p class="muted">Sin asistentes todavía.</p>'}
+  </div><div class="actions"><button onclick="closeModal();render()">Cerrar</button></div>`);
+}
+function buscarParaSesion(sid,q){
+  if(!q.trim())return '';
+  return S.trab.filter(t=>activo(t)&&coincide(t,q)).slice(0,8).map(t=>`<div class="item tap" onclick="agregarAsistente('${sid}','${t.id}',false,true)"><div><b>${esc(t.nombre)}</b><div class="muted">${esc(t.codigo||'')} · ${esc(pn(t))}</div></div><span class="badge b-info">+ Agregar</span></div>`).join('')||'<p class="muted">Sin resultados.</p>';
+}
+function agregarAsistente(sid,val,esCodigo,esId){
+  const s=S.sesiones.find(x=>x.id===sid);const t=esId?T(val):buscarCodigo(val);
+  if(!t){toast('Carnet no registrado: '+val);if(!scanStream&&!zxReader)verSesion(sid);return null}
+  if(S.capReg.some(r=>r.sesionId===sid&&r.trabId===t.id)){toast('Ya registrado: '+t.nombre);if(!scanStream&&!zxReader)verSesion(sid);return t}
+  S.capReg.push({id:uid(),trabId:t.id,capId:s.capId,fecha:s.fecha,sesionId:sid});save();toast('✔ '+t.nombre);
+  if(!scanStream&&!zxReader)verSesion(sid);return t;
+}
+function quitarAsistente(rid,sid){S.capReg=S.capReg.filter(r=>r.id!==rid);save();verSesion(sid)}
+function scanSesion(sid){
+  const lista=[];
+  scanLive(v=>{const t=agregarAsistente(sid,v,true);if(t&&!lista.includes(t.nombre)){lista.unshift(t.nombre);$('scanMsg').innerHTML=`<b>${lista.length} registrados:</b><br>`+lista.slice(0,6).map(esc).join('<br>')}return true},
+    'Escanee los carnets uno tras otro',`verSesion('${sid}')`);
+}
+
+/* ================= Escáner ================= */
+const nativo='BarcodeDetector' in window,zx=!!window.ZXing,tieneLector=nativo||zx;
+let zxReader=null,scanStream=null,PEND=null,PHOTO_CB=null,scanCb=null,lastCode='',lastAt=0;
+function vEscanear(){
+  return `<div class="card"><h2>Inspección en campo</h2>
+    <p class="muted">Escanee el código de barras del carnet o busque por código, cédula o nombre.</p>
+    ${tieneLector?`<button class="btn big full" onclick="scanLive(v=>{encontrado(v);return false})">📷 Escanear carnet</button><button class="btn2 full" onclick="PHOTO_CB=encontrado;$('foto').click()">Tomar foto del código de barras</button>`
+      :`<div class="alert prox">No se pudo cargar el lector. Busque manualmente.</div>`}
+    <input type="search" id="bq" placeholder="Código, cédula o nombre" oninput="$('bres').innerHTML=buscarScan(this.value)">
+  </div><div class="card" id="bres"><p class="muted">Escriba para buscar.</p></div>`;
+}
+function buscarScan(q){if(!q.trim())return '<p class="muted">Escriba para buscar.</p>';idx();const l=S.trab.filter(t=>coincide(t,q)).slice(0,30);return l.length?l.map(filaTrab).join(''):'<p class="muted">No se encontró ningún trabajador.</p>'}
+function buscarCodigo(raw){
+  const v=String(raw).trim().toUpperCase(),c=cedNorm(v);
+  return S.trab.find(x=>x.codigo&&x.codigo===v)||S.trab.find(x=>x.cedula&&c.length>=9&&x.cedula===c)||S.trab.find(x=>(x.cedula&&v.includes(x.cedula))||(x.codigo&&x.codigo.length>3&&v.includes(x.codigo)));
+}
+function onCode(val){
+  const now=Date.now();if(val===lastCode&&now-lastAt<2500)return;lastCode=val;lastAt=now;
+  if(navigator.vibrate)navigator.vibrate(100);
+  const seguir=scanCb&&scanCb(val);if(!seguir)stopScan();
+}
+async function scanLive(cb,titulo,alCerrar){
+  scanCb=cb;lastCode='';
+  openModal(`<h2>${titulo||'Apunte al código de barras'}</h2><video id="vid" playsinline muted autoplay style="width:100%;border-radius:12px;background:#000;min-height:200px"></video><p class="muted">Buena luz, carnet quieto y código horizontal.</p><div id="scanMsg" class="muted"></div><button class="btn2 full" onclick="stopScan();${alCerrar?alCerrar:'closeModal()'}">${alCerrar?'Terminar':'Cancelar'}</button>`);
+  if(!nativo){
+    try{zxReader=new ZXing.BrowserMultiFormatReader(null,200);
+      await zxReader.decodeFromConstraints({video:{facingMode:'environment'}},$('vid'),r=>{if(r&&zxReader)onCode(r.getText())});
+    }catch(e){stopScan();closeModal();alert('No se pudo abrir la cámara. Revise el permiso de cámara o use “Tomar foto”.')}
+    return;
+  }
+  let det;try{det=new BarcodeDetector()}catch(e){closeModal();alert('Lector no disponible.');return}
+  try{scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})}catch(e){closeModal();alert('No se pudo abrir la cámara. Use “Tomar foto”.');return}
+  const v=$('vid');v.srcObject=scanStream;try{await v.play()}catch(e){}
+  const tick=async()=>{if(!scanStream)return;try{const c=await det.detect(v);if(c.length)onCode(c[0].rawValue)}catch(e){}if(scanStream)setTimeout(tick,250)};tick();
+}
+function stopScan(){
+  if(zxReader){const r=zxReader;zxReader=null;try{r.reset()}catch(e){}}
+  if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}
+}
+async function scanFoto(inp){
+  const f=inp.files[0];inp.value='';if(!f)return;const cb=PHOTO_CB||encontrado;PHOTO_CB=null;
+  const noLeido=()=>alert('No se detectó el código. Tome la foto más cerca, enfocada y con buena luz.');
+  try{
+    if(nativo){const c=await new BarcodeDetector().detect(await createImageBitmap(f));c.length?cb(c[0].rawValue):noLeido();return}
+    const url=URL.createObjectURL(f);
+    try{const r=await new ZXing.BrowserMultiFormatReader().decodeFromImageUrl(url);cb(r.getText())}catch(e){noLeido()}finally{URL.revokeObjectURL(url)}
+  }catch(e){alert('No se pudo leer la imagen: '+e.message)}
+}
+function encontrado(raw){
+  const t=buscarCodigo(raw);if(t){FT='epp';verTrab(t.id);return}
+  const v=String(raw).trim().toUpperCase();PEND=/^\d{9,10}$/.test(v)?{cedula:cedNorm(v)}:{codigo:v};
+  openModal(`<h2>Carnet no registrado</h2><p>Se leyó: <b>${esc(v)}</b></p><p>¿Registrar un nuevo trabajador con este dato?</p>
+  <div class="actions"><button class="btn" onclick="formTrab('',PEND)">Registrar</button><button onclick="closeModal()">Cerrar</button></div>`);
+}
+
+/* ================= Fumigación ================= */
+const FF={mod:''};
+function vFumig(){
+  idx();
+  const l=S.trab.filter(t=>activo(t)&&esFumig(t)&&(!FF.mod||t.modulo===FF.mod)).map(t=>({t,r:rotEstado(t),ee:eppEstado(t,'epp'),fito:capEstado(t).find(c=>c.cap.id==='fito')}))
+    .sort((a,b)=>(a.r&&!a.r.def?a.r.dias:99999)-(b.r&&!b.r.def?b.r.dias:99999));
+  const mods=[...new Set(S.trab.filter(t=>activo(t)&&esFumig(t)).map(t=>t.modulo).filter(Boolean))].sort();
+  const cnt=k=>l.filter(x=>PU(x.t.puestoId)?.id===k).length;
+  const venc=l.filter(x=>x.r&&!x.r.def&&x.r.est==='venc').length,prox=l.filter(x=>x.r&&!x.r.def&&x.r.est==='prox').length;
+  const sinFito=l.filter(x=>x.fito&&x.fito.est!=='ok'&&x.fito.est!=='prox').length,eppV=l.filter(x=>x.ee.some(e=>e.est==='venc'||e.est==='pend')).length;
+  return `<div class="card"><h2>☣️ Fumigación / fitosanidad</h2>
+    <div class="muted">Aplicadores rotan cada ${PU('aplic')?.rot||6} meses · bomberos cada ${PU('bomb')?.rot||12} meses. Si la matriz trae “fecha de cambio”, se usa esa.</div>
+    ${mods.length?`<div class="tabs" style="margin-top:8px"><button class="${!FF.mod?'on':''}" onclick="FF.mod='';render()">Todos</button>${mods.map(m=>`<button class="${FF.mod===m?'on':''}" onclick="FF.mod='${esc(m)}';render()">${esc(m)}</button>`).join('')}</div>`:''}
+  </div>
+  <div class="grid">
+    <div class="kpi"><b>${l.length}</b><span>${cnt('aplic')} aplicadores · ${cnt('bomb')} bomberos · ${cnt('sup_fum')} supervisores</span></div>
+    <div class="kpi ${venc?'r':'g'}"><b>${venc}</b><span>Rotación vencida</span></div>
+    <div class="kpi ${prox?'a':'g'}"><b>${prox}</b><span>Rotan en ≤30 días</span></div>
+    <div class="kpi ${sinFito||eppV?'r':'g'}"><b>${sinFito}</b><span>Sin capacitación de fitosanidad · ${eppV} con EPP pendiente</span></div>
+  </div>
+  <div class="card">${l.length?l.map(({t,r,ee,fito})=>{const ev=ee.filter(e=>e.est==='venc'||e.est==='pend').length;return `<div class="item tap" onclick="FT='mas';verTrab('${t.id}')"><div><b>${esc(t.nombre)}</b><div class="muted">${esc(pn(t))}${t.modulo?' · '+esc(t.modulo):''} · en el área desde ${showD(t.inicioPuesto||t.ingreso)}</div><div class="muted">${r?(r.def?'Definitivo':'Cambio: '+showD(r.fecha)+' ('+diasTxt(r.dias)+')'):'Sin fecha de cambio'}</div></div><div class="col">${r?(r.def?badge('info','Definitivo'):badge(r.est,r.est==='venc'?'Debe rotar':r.est==='prox'?'Próximo':'Al día')):''}${fito&&fito.est==='no'?badge('no','Sin capac.'):''}${ev?badge('venc',ev+' EPP'):''}</div></div>`}).join(''):'<p class="muted">No hay personal de fumigación activo.</p>'}
+    <button class="full" onclick="exportar('fumig')">Exportar lista de fumigación</button>
+  </div>`;
+}
+
+/* ================= Stock ================= */
+function vStock(){
+  const r=estimar(),d=desercion();
+  const tabla=tipo=>`<table><tr><th>Ítem</th><th class="n">Stock</th><th class="n">Necesita</th><th class="n">Comprar</th></tr>${r.filas.filter(f=>f.e.tipo===tipo).map(f=>`<tr class="tap" onclick="formStock('${f.e.id}')"><td>${esc(f.e.nombre)}${f.stock<=f.e.minimo?' '+badge('venc','bajo'):''}${f.e.talla?'<div class="muted">por talla ›</div>':''}</td><td class="n"><b>${f.stock}</b></td><td class="n">${f.total}</td><td class="n">${f.comprar?`<b class="red">${f.comprar}</b>`:'0'}</td></tr>`).join('')}</table>`;
+  return `<div class="card"><h2>Estimación de stock</h2>
+    <p class="hint">Cambios programados del personal activo + kit de los nuevos ingresos esperados (según la deserción real) + margen. Separado por talla. A quien no tiene entregas registradas se le calcula el cambio por su fecha de ingreso o un promedio.</p>
+    <div class="row2"><label>Próximos (días)<input type="number" min="7" value="${esc(S.cfg.horizonte)}" onchange="S.cfg.horizonte=+this.value||30;save();render()"></label>
+    <label>Margen (%)<input type="number" min="0" value="${esc(S.cfg.margen)}" onchange="S.cfg.margen=+this.value||0;save();render()"></label></div>
+    <label>Ingresos esperados por mes<input type="number" min="0" placeholder="Automático: ${d.porMes}" value="${esc(S.cfg.ingresosMes)}" onchange="S.cfg.ingresosMes=this.value;save();render()"></label>
+    <p class="hint">Vacío = promedio real de los últimos 90 días (${d.porMes}/mes; ${d.pct}% se fue en ≤7 días).</p></div>
+  <div class="card"><h2>🧤 EPP · próximos ${r.H} días</h2>${tabla('epp')}</div>
+  <div class="card"><h2>👕 Dotación · próximos ${r.H} días</h2>${tabla('dot')}
+    <div class="actions"><button onclick="formEpp()">+ Nuevo ítem</button><button onclick="exportar('estimacion')">Exportar pedido</button></div></div>`;
+}
+function formStock(eid){
+  const e=EP(eid),f=estimar().filas.find(x=>x.e.id===eid);
+  const movs=S.movs.filter(m=>m.eppId===eid).sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,10);
+  openModal(`<h2>${esc(e.nombre)}</h2><div class="muted">Stock total ${f.stock} ${esc(e.unidad)} · mínimo ${e.minimo}${e.talla?' · talla según '+TL[e.talla]:''}</div>
+  ${f.det.length?`<table style="margin-top:8px"><tr><th>Talla</th><th class="n">Stock</th><th class="n">Cambios</th><th class="n">Nuevos</th><th class="n">Comprar</th></tr>${f.det.map(x=>`<tr><td>${esc(tallaTxt(x.k))}</td><td class="n">${x.stock}</td><td class="n">${x.ren}</td><td class="n">${x.nue}</td><td class="n">${x.comprar?`<b class="red">${x.comprar}</b>`:'0'}</td></tr>`).join('')}</table>`:''}
+  <h3>Movimiento de bodega</h3>
+  <form onsubmit="return guardarMov(event,'${eid}')">
+    <label>Tipo<select name="tipo"><option value="ing">Ingreso a bodega (suma)</option><option value="aju">Conteo físico (reemplaza)</option></select></label>
+    <div class="row3">${e.talla?`<label>Talla<input name="talla" required></label>`:''}<label>Cantidad<input type="number" name="cant" min="0" required></label><label>Fecha<input type="date" name="fecha" value="${hoy()}"></label></div>
+    <label>Nota<input name="nota" placeholder="Proveedor, factura…"></label>
+    <div class="actions"><button class="btn">Guardar</button><button type="button" onclick="formEpp('${eid}')">Editar ítem</button><button type="button" onclick="closeModal()">Cerrar</button></div>
+  </form>
+  ${movs.length?`<h3>Últimos movimientos</h3><table>${movs.map(m=>`<tr><td>${showD(m.fecha)}</td><td>${m.tipo==='ing'?'Ingreso':'Conteo'}${m.talla?' T.'+esc(m.talla):''}</td><td class="n">${m.cant}</td><td>${esc(m.nota||'')}</td></tr>`).join('')}</table>`:''}`);
+}
+function guardarMov(ev,eid){
+  ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target)),e=EP(eid),cant=+f.cant||0,k=e.talla?(f.talla||'').trim().toUpperCase():'';
+  e.stock=e.stock||{};S.movs.push({id:uid(),eppId:eid,fecha:f.fecha,tipo:f.tipo,cant,talla:k,nota:f.nota,antes:+e.stock[k]||0});
+  e.stock[k]=f.tipo==='ing'?(+e.stock[k]||0)+cant:cant;save();render();formStock(eid);toast('Movimiento guardado');return false;
+}
+
+/* ================= Ajustes ================= */
+function vAjustes(){
+  return `<div class="card"><h2>Importar matriz Excel</h2>
+    <p class="hint">Lee las hojas ACTIVOS, PASIVOS, SALIDAS, PERSONAL ADMINISTRATIVO, ROTACION FITO, Capacitación SSO, BRIGADAS, COPASHT y COMITES. <b>No importa sueldos, cuentas, bancos, correos, teléfonos, direcciones, etnia ni datos médicos.</b> Se puede volver a importar cuando se actualice la matriz: actualiza a cada persona por cédula o código y conserva las entregas y capacitaciones registradas en la app.</p>
+    ${S.cfg.importado?`<p class="muted">Última importación: <b>${esc(S.cfg.importado)}</b></p>`:''}
+    <button class="btn full" onclick="$('xlsIn').click()">Elegir archivo .xlsx</button><input type="file" id="xlsIn" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden onchange="importarExcel(this)"></div>
+  <div class="card"><h2>Puestos de trabajo</h2><p class="hint">Cada puesto define EPP, dotación, frecuencia de cambio, capacitaciones, rotación y las palabras de la columna ACTIVIDAD que lo identifican.</p>
+    ${S.puestos.map(p=>{const n=S.trab.filter(t=>activo(t)&&t.puestoId===p.id).length;return `<div class="item tap" onclick="formPuesto('${p.id}')"><div><b>${esc(p.nombre)}</b><div class="muted">${n} personas · ${p.epps.length} ítems · ${p.caps.length} capac.${+p.rot?' · rota cada '+p.rot+' meses':''}</div></div><span>›</span></div>`}).join('')}
+    <button class="btn2 full" onclick="formPuesto()">+ Nuevo puesto</button><button class="full" onclick="reasignarPuestos()">Reasignar puestos según ACTIVIDAD</button></div>
+  <div class="card"><h2>Catálogo de EPP y dotación</h2>
+    ${S.epps.map(e=>`<div class="item tap" onclick="formEpp('${e.id}')"><div><b>${esc(e.nombre)}</b><div class="muted">${e.tipo==='epp'?'EPP':'Dotación'} · ${esc(e.unidad)}${e.talla?' · talla '+TL[e.talla]:''} · stock ${stockTotal(e)}</div></div><span>›</span></div>`).join('')}
+    <button class="btn2 full" onclick="formEpp()">+ Nuevo ítem</button></div>
+  <div class="card"><h2>Reportes (Excel / CSV)</h2>
+    ${[['matrizEpp','Matriz de EPP y dotación por trabajador'],['matrizCap','Matriz de capacitaciones'],['entregas','Historial de entregas'],['fumig','Fumigación y rotaciones'],['inspecciones','Inspecciones'],['personal','Personal, salidas y deserción'],['estimacion','Pedido de stock por talla']].map(([k,l])=>`<button class="full" onclick="exportar('${k}')">${l}</button>`).join('')}</div>
+  <div class="card"><h2>Seguridad</h2>
+    <p class="hint">Un PIN evita que otra persona abra la app si pierde el celular.</p>
+    <button class="full" onclick="cambiarPin()">${S.cfg.pinHash?'Cambiar o quitar PIN':'Poner PIN'}</button></div>
+  <div class="card"><h2>Respaldo</h2>
+    <p class="hint">Los datos viven solo en este celular. Exporte un respaldo cada semana (WhatsApp, correo o Drive). Sirve también para pasar los datos a otro equipo.</p>
+    <p class="muted">Último respaldo: <b>${showD(S.cfg.ultimoRespaldo)}</b></p>
+    <button class="btn full" onclick="respaldo()">💾 Exportar respaldo</button>
+    <button class="btn2 full" onclick="$('jsonIn').click()">Restaurar respaldo</button><input type="file" id="jsonIn" accept=".json,application/json" hidden onchange="restaurar(this)">
+    <button class="full danger" onclick="borrarTodo()">Borrar todos los datos</button></div>`;
+}
+function formPuesto(id){
+  const p=id?PU(id):{nombre:'',rot:0,claves:[],epps:[],caps:[]};
+  const fila=e=>{const pe=p.epps.find(x=>x.eppId===e.id);return `<div class="eprow"><label class="chk"><input type="checkbox" name="e_${e.id}" ${pe?'checked':''}>${esc(e.nombre)}</label><input type="number" name="f_${e.id}" min="1" value="${pe?pe.frec:e.tipo==='dot'?365:30}"><span>días ×</span><input type="number" name="c_${e.id}" min="1" value="${pe?pe.cant:1}"></div>`};
+  openModal(`<h2>${id?'Editar':'Nuevo'} puesto</h2>
+  <form onsubmit="return guardarPuesto(event,'${id||''}')">
+    <label>Nombre<input name="nombre" required value="${esc(p.nombre)}"></label>
+    <label>Rotación obligatoria cada (meses) · 0 = no aplica<input type="number" name="rot" min="0" value="${+p.rot||0}"></label>
+    <label>Palabras en ACTIVIDAD que identifican el puesto (separadas por coma)<input name="claves" value="${esc((p.claves||[]).join(', '))}"></label>
+    <h3>EPP</h3><p class="hint">Marque cada ítem, cada cuántos días se cambia y cuántas unidades.</p>${S.epps.filter(e=>e.tipo==='epp').map(fila).join('')}
+    <h3>Dotación</h3>${S.epps.filter(e=>e.tipo==='dot').map(fila).join('')}
+    <h3>Capacitaciones requeridas</h3>${S.caps.map(c=>`<label class="chk"><input type="checkbox" name="k_${c.id}" ${p.caps.includes(c.id)?'checked':''}>${esc(c.nombre)}</label>`).join('')}
+    <div class="actions"><button class="btn">Guardar</button>${id?`<button type="button" class="danger" onclick="borrarPuesto('${id}')">Eliminar</button>`:''}<button type="button" onclick="closeModal()">Cancelar</button></div>
+  </form>`);
+}
+function guardarPuesto(ev,id){
+  ev.preventDefault();const fd=new FormData(ev.target);
+  const o={nombre:fd.get('nombre').trim(),rot:+fd.get('rot')||0,claves:fd.get('claves').split(',').map(s=>s.trim().toUpperCase()).filter(Boolean),
+    epps:S.epps.filter(e=>fd.get('e_'+e.id)).map(e=>({eppId:e.id,frec:Math.max(1,+fd.get('f_'+e.id)||30),cant:Math.max(1,+fd.get('c_'+e.id)||1)})),
+    caps:S.caps.filter(c=>fd.get('k_'+c.id)).map(c=>c.id)};
+  if(id)Object.assign(PU(id),o);else S.puestos.splice(Math.max(0,S.puestos.length-1),0,{id:uid(),...o});
+  save();closeModal();render();return false;
+}
+function borrarPuesto(id){const n=S.trab.filter(t=>t.puestoId===id).length;if(n){alert(`No se puede eliminar: ${n} trabajador(es) tienen este puesto.`);return}if(!confirm('¿Eliminar este puesto?'))return;S.puestos=S.puestos.filter(p=>p.id!==id);save();closeModal();render()}
+function reasignarPuestos(){
+  if(!confirm('Volver a asignar el puesto de cada trabajador según su ACTIVIDAD de la matriz? Los cambios hechos a mano en la app se respetan.'))return;
+  let n=0;S.trab.forEach(t=>{if(t.puestoManual)return;const p=asignarPuesto([t.actividad,t.area,t.bloque]);if(p!==t.puestoId){t.puestoId=p;n++}});
+  save();render();toast(n+' puestos actualizados');
+}
+function formEpp(id){
+  const e=id?EP(id):{nombre:'',tipo:'epp',talla:'',unidad:'unidad',minimo:10};
+  openModal(`<h2>${id?'Editar':'Nuevo'} ítem</h2>
+  <form onsubmit="return guardarEpp(event,'${id||''}')">
+    <label>Nombre<input name="nombre" required value="${esc(e.nombre)}"></label>
+    <div class="row2"><label>Tipo<select name="tipo"><option value="epp" ${e.tipo==='epp'?'selected':''}>EPP</option><option value="dot" ${e.tipo==='dot'?'selected':''}>Dotación</option></select></label>
+    <label>Talla según<select name="talla"><option value="">Sin talla</option>${TALLAS.map(([k,l])=>`<option value="${k}" ${e.talla===k?'selected':''}>${l}</option>`).join('')}</select></label></div>
+    <div class="row2"><label>Unidad<input name="unidad" value="${esc(e.unidad)}"></label><label>Stock mínimo<input type="number" name="minimo" min="0" value="${e.minimo}"></label></div>
+    <div class="actions"><button class="btn">Guardar</button>${id?`<button type="button" class="danger" onclick="borrarEpp('${id}')">Eliminar</button>`:''}<button type="button" onclick="closeModal()">Cancelar</button></div>
+  </form>`);
+}
+function guardarEpp(ev,id){ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target));const o={nombre:f.nombre.trim(),tipo:f.tipo,talla:f.talla,unidad:f.unidad.trim()||'unidad',minimo:+f.minimo||0};if(id)Object.assign(EP(id),o);else S.epps.push({id:uid(),stock:{},...o});save();closeModal();render();return false}
+function borrarEpp(id){if(S.puestos.some(p=>p.epps.some(x=>x.eppId===id))||S.entregas.some(x=>x.eppId===id)){alert('No se puede eliminar: está asignado a un puesto o tiene entregas.');return}if(!confirm('¿Eliminar?'))return;S.epps=S.epps.filter(e=>e.id!==id);save();closeModal();render()}
+function formCapCat(id){
+  const c=id?CA(id):{nombre:'',vigencia:12};
+  openModal(`<h2>${id?'Editar':'Nueva'} capacitación</h2>
+  <form onsubmit="return guardarCapCat(event,'${id||''}')">
+    <label>Nombre<input name="nombre" required value="${esc(c.nombre)}"></label>
+    <label>Vigencia en meses (0 = no vence)<input type="number" name="vigencia" min="0" value="${+c.vigencia||0}"></label>
+    <div class="actions"><button class="btn">Guardar</button>${id?`<button type="button" class="danger" onclick="borrarCapCat('${id}')">Eliminar</button>`:''}<button type="button" onclick="closeModal()">Cancelar</button></div>
+  </form>`);
+}
+function guardarCapCat(ev,id){ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target));const o={nombre:f.nombre.trim(),vigencia:+f.vigencia||0};if(id)Object.assign(CA(id),o);else S.caps.push({id:uid(),...o});save();closeModal();render();return false}
+function borrarCapCat(id){if(S.capReg.some(x=>x.capId===id)){alert('Tiene asistencias registradas.');return}if(!confirm('¿Eliminar?'))return;S.caps=S.caps.filter(c=>c.id!==id);S.puestos.forEach(p=>p.caps=p.caps.filter(x=>x!==id));save();closeModal();render()}
+function formCap(tid,capId){
+  const t=T(tid);
+  openModal(`<h2>Registrar capacitación</h2><div class="muted">${esc(t.nombre)}</div>
+  <form onsubmit="return guardarCap(event,'${tid}')">
+    <label>Capacitación<select name="capId">${S.caps.map(c=>`<option value="${c.id}" ${c.id===capId?'selected':''}>${esc(c.nombre)}</option>`).join('')}</select></label>
+    <label>Fecha<input type="date" name="fecha" value="${hoy()}" required></label>
+    <label>Observación<input name="nota"></label>
+    <div class="actions"><button class="btn">Guardar</button><button type="button" onclick="verTrab('${tid}','cap')">Cancelar</button></div>
+  </form>`);
+}
+function guardarCap(ev,tid){ev.preventDefault();S.capReg.push({id:uid(),trabId:tid,...Object.fromEntries(new FormData(ev.target))});save();render();verTrab(tid,'cap');return false}
+
+/* ================= PIN ================= */
+function cambiarPin(){
+  const p=prompt(S.cfg.pinHash?'Nuevo PIN de 4 a 6 números (deje vacío para quitar el PIN):':'PIN de 4 a 6 números:');if(p===null)return;
+  if(p===''){S.cfg.pinHash='';save();render();toast('PIN quitado');return}
+  if(!/^\d{4,6}$/.test(p)){alert('El PIN debe tener de 4 a 6 números.');return}
+  if(prompt('Repita el PIN:')!==p){alert('No coincide.');return}
+  S.cfg.pinHash=hashPin(p);save();render();toast('PIN guardado');
+}
+function bloquear(){
+  if(!S.cfg.pinHash)return;
+  const d=document.createElement('div');d.id='lock';d.innerHTML=`<div style="font-size:40px">🔒</div><b>SSO Marledian</b><input type="password" inputmode="numeric" id="pinIn" placeholder="PIN" autocomplete="off"><div id="pinErr"></div>`;
+  document.body.appendChild(d);const i=$('pinIn');i.focus();
+  i.oninput=()=>{if(hashPin(i.value)===S.cfg.pinHash){d.remove()}else if(i.value.length>=6){$('pinErr').textContent='PIN incorrecto';i.value=''}};
+}
+
+/* ================= Exportar / respaldo ================= */
+function descargar(nombre,contenido,tipo){
+  const blob=new Blob([contenido],{type:tipo});
+  try{const file=new File([blob],nombre,{type:tipo});if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:nombre}).catch(()=>{});return}}catch(e){}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nombre;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
+}
+const csv=rows=>'﻿'+rows.map(r=>r.map(c=>{c=c==null?'':String(c);return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(';')).join('\r\n');
+function exportar(tipo){
+  idx();const rows=[],act=S.trab.filter(activo);
+  if(tipo==='matrizEpp'){rows.push(['Código','Cédula','Nombre','Puesto','Bloque','Supervisor','Tipo','Ítem','Talla','Cantidad','Frecuencia (días)','Última entrega','Próximo cambio','Estado']);act.forEach(t=>eppEstado(t).forEach(e=>{const ep=EP(e.eppId);rows.push([t.codigo,t.cedula,t.nombre,pn(t),t.bloque,t.supervisor,ep.tipo==='epp'?'EPP':'Dotación',ep.nombre,tallaDe(t,ep),e.cant,e.frec,showD(e.ult),showD(e.prox),LBL[e.est]])}))}
+  if(tipo==='matrizCap'){rows.push(['Código','Cédula','Nombre','Puesto','Supervisor','Capacitación','Fecha','Vence','Estado']);act.forEach(t=>capEstado(t).forEach(c=>rows.push([t.codigo,t.cedula,t.nombre,pn(t),t.supervisor,c.cap.nombre,showD(c.fecha),showD(c.vence),c.est==='ok'?'Recibida':LBL[c.est]])))}
+  if(tipo==='entregas'){rows.push(['Fecha','Código','Cédula','Nombre','Puesto','Tipo','Ítem','Talla','Cantidad','Motivo']);[...S.entregas].sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(x=>{const t=T(x.trabId)||{},e=EP(x.eppId)||{};rows.push([showD(x.fecha),t.codigo,t.cedula,t.nombre,t.puestoId?pn(t):'',e.tipo==='dot'?'Dotación':'EPP',e.nombre,x.talla,x.cant,x.motivo])})}
+  if(tipo==='fumig'){rows.push(['Código','Cédula','Nombre','Puesto','Módulo','Ingreso empresa','Ingreso al área','Fecha de cambio','Días','Estado','Capacitación fitosanidad']);act.filter(esFumig).forEach(t=>{const r=rotEstado(t),f=capEstado(t).find(c=>c.cap.id==='fito');rows.push([t.codigo,t.cedula,t.nombre,pn(t),t.modulo,showD(t.ingreso),showD(t.inicioPuesto),r?(r.def?'Definitivo':showD(r.fecha)):'',r&&!r.def?r.dias:'',r?(r.def?'Definitivo':r.est==='venc'?'Debe rotar':r.est==='prox'?'Próximo':'Al día'):'',f?(f.tiene?'Sí '+showD(f.fecha):'No'):''])})}
+  if(tipo==='inspecciones'){rows.push(['Fecha','Código','Nombre','Puesto','Bloque','Supervisor','Usa EPP','Observación']);[...S.inspecciones].sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(i=>{const t=T(i.trabId)||{};rows.push([showD(i.fecha),t.codigo,t.nombre,t.puestoId?pn(t):'',t.bloque,t.supervisor,{si:'Sí',parcial:'Parcial',no:'No'}[i.usa],i.obs])})}
+  if(tipo==='personal'){rows.push(['Código','Cédula','Nombre','Puesto','Actividad','Bloque','Supervisor','Ingreso','Estado','Salida','Días trabajados','Motivo salida']);S.trab.forEach(t=>rows.push([t.codigo,t.cedula,t.nombre,pn(t),t.actividad,t.bloque,t.supervisor,showD(t.ingreso),activo(t)?'Activo':'Retirado',showD(t.salida),t.salida&&t.ingreso?diffDates(t.ingreso,t.salida):'',t.motivoSalida]))}
+  if(tipo==='estimacion'){const r=estimar();rows.push([`Pedido próximos ${r.H} días · margen ${S.cfg.margen}% · ingresos esperados/mes ${r.porMes}`]);rows.push(['Tipo','Ítem','Talla','Stock','Cambios programados','Nuevos ingresos','Total con margen','Comprar']);r.filas.forEach(f=>f.det.forEach(x=>rows.push([f.e.tipo==='epp'?'EPP':'Dotación',f.e.nombre,tallaTxt(x.k),x.stock,x.ren,x.nue,x.total,x.comprar])))}
+  descargar(`${tipo}_${hoy()}.csv`,csv(rows),'text/csv');
+}
+function exportarAsistencia(sid){
+  const s=S.sesiones.find(x=>x.id===sid),c=CA(s.capId);
+  const rows=[['REGISTRO DE CAPACITACIÓN (DN-RE-204-025)'],['Tema',c?.nombre],['Fecha',showD(s.fecha)],['Lugar',s.lugar],['Tiempo (horas)',s.horas],['Instructor',s.instructor],['Objetivo',s.objetivo],[],['Nº','Nombres y Apellidos','Sexo H/M','Código','Puesto','Firma']];
+  S.capReg.filter(r=>r.sesionId===sid).map(r=>T(r.trabId)).filter(Boolean).forEach((t,i)=>rows.push([i+1,t.nombre,t.genero==='M'?'M':t.genero?'H':'',t.codigo,pn(t),'']));
+  descargar(`asistencia_${norm(c?.nombre).replace(/\W+/g,'_').slice(0,30)}_${s.fecha}.csv`,csv(rows),'text/csv');
+}
+function respaldo(){S.cfg.ultimoRespaldo=hoy();save();descargar(`respaldo_SSO_${hoy()}.json`,JSON.stringify(S),'application/json');render()}
+function restaurar(inp){const f=inp.files[0];inp.value='';if(!f)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);if(!j.trab||!j.epps)throw 0;if(!confirm(`El respaldo tiene ${j.trab.length} trabajadores y ${(j.entregas||[]).length} entregas. REEMPLAZA los datos actuales. ¿Continuar?`))return;S={...defaults(),...j};save();render();alert('Respaldo restaurado.')}catch(e){alert('El archivo no es un respaldo válido.')}};r.readAsText(f)}
+function borrarTodo(){if(confirm('¿Borrar TODOS los datos de este celular? Haga un respaldo antes.')&&confirm('¿Está segura? No se puede deshacer.')){S=defaults();save();render()}}
+
+/* ================= Importar matriz Excel ================= */
+function cargarXLSX(){return window.XLSX?Promise.resolve():new Promise((ok,err)=>{const s=document.createElement('script');s.src='xlsx.full.min.js';s.onload=ok;s.onerror=()=>err(new Error('No se pudo cargar el lector de Excel.'));document.head.appendChild(s)})}
+function hojaTabla(wb,nombre,claves){
+  const n=wb.SheetNames.find(x=>norm(x)===norm(nombre));if(!n)return null;
+  const rows=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:''});
+  const hi=rows.slice(0,15).findIndex(r=>claves.every(k=>r.some(c=>norm(c).includes(k))));if(hi<0)return null;
+  const head=rows[hi].map(norm);
+  const col=(...ks)=>{for(const k of ks){const i=head.indexOf(k);if(i>=0)return i}for(const k of ks){const i=head.findIndex(h=>h.startsWith(k));if(i>=0)return i}return -1};
+  return{col,data:rows.slice(hi+1).filter(r=>r.some(c=>c!==''&&c!=null))};
+}
+const txt=v=>v==null?'':String(v).replace(/\s+/g,' ').trim();
+function claveNombre(s){return norm(s).replace(/[^a-z ]/g,'').trim()}
+async function importarExcel(inp){
+  const f=inp.files[0];inp.value='';if(!f)return;
+  toast('Leyendo matriz…');
+  try{await cargarXLSX()}catch(e){alert(e.message);return}
+  let wb;try{wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true})}catch(e){alert('No se pudo leer el archivo: '+e.message);return}
+  const R={nuevos:0,act:0,ret:0,adm:0,fito:0,caps:0,eppImp:0,roles:0,hojas:[]};
+  const porCed={},porCod={},porNom={};
+  const indexar=t=>{if(t.cedula)porCed[t.cedula]=t;if(t.codigo)porCod[t.codigo]=t;porNom[claveNombre(t.nombre)]=t};
+  S.trab.forEach(indexar);
+  const vistos=new Set();
+  const buscar=(ced,cod,nom)=>(ced&&porCed[ced])||(cod&&porCod[cod])||(nom&&porNom[claveNombre(nom)])||null;
+  const porNombre=nom=>{const k=claveNombre(nom);if(!k)return null;if(porNom[k])return porNom[k];
+    const tk=k.split(' ').filter(x=>x.length>1);if(tk.length<2)return null;
+    const c=S.trab.filter(t=>{const tt=claveNombre(t.nombre).split(' ');return tk.every(x=>tt.includes(x))});return c.length===1?c[0]:null};
+  function upsert(o,{retirado}={}){
+    let t=buscar(o.cedula,o.codigo,o.nombre);
+    if(t&&retirado&&vistos.has(t.id))return t;
+    if(!t){t={id:uid(),roles:[],tallas:{},estado:'activo',salida:''};S.trab.push(t);R.nuevos++}else R.act++;
+    for(const[k,v]of Object.entries(o)){if(k==='tallas'){t.tallas={...(t.tallas||{}),...Object.fromEntries(Object.entries(v).filter(x=>x[1]))}}else if(v!==''&&v!=null)t[k]=v}
+    if(!t.puestoManual)t.puestoId=asignarPuesto([t.actividad,t.area,t.bloque]);
+    if(!t.inicioPuesto)t.inicioPuesto=t.ingreso||'';
+    vistos.add(t.id);indexar(t);return t;
+  }
+  // ACTIVOS y SALIDAS (misma estructura)
+  for(const[hoja,ret]of[['ACTIVOS',false],['SALIDAS',true]]){
+    const h=hojaTabla(wb,hoja,['cedula','nombres y apellidos']);if(!h)continue;R.hojas.push(hoja);
+    const C={cod:h.col('codigo'),ced:h.col('cedula'),nom:h.col('nombres y apellidos'),ing:h.col('fec.ing','fec. ing'),act:h.col('actividad que realiza','actividad'),area:h.col('area'),blq:h.col('bloque'),ofi:h.col('oficina'),sup:h.col('supervisor a cargo'),tec:h.col('tecnico a cargo'),gen:h.col('genero'),est:h.col('estado'),sal:h.col('fecha de salida'),mot:h.col('motivo'),capsso:h.col('capacitados por sso'),
+      tl:Object.fromEntries([['botas','talla botas'],['guantes','talla guantes'],['buso','buso'],['camisa','camisa'],['pantalon','pantalon'],['calentador','calentador'],['mandil','mandil'],['zapatos','zapatos']].map(([k,c])=>[k,h.col(c)]))};
+    const g=(r,i)=>i>=0?r[i]:'';
+    for(const r of h.data){
+      const nombre=txt(g(r,C.nom)).toUpperCase();if(!nombre)continue;
+      const estado=up(g(r,C.est)),salida=parseFecha(g(r,C.sal));
+      const esRet=ret||estado.startsWith('SALI')||estado.startsWith('INACT')||estado.startsWith('RETIR');
+      const o={codigo:txt(g(r,C.cod)).toUpperCase(),cedula:cedNorm(g(r,C.ced)),nombre,ingreso:parseFecha(g(r,C.ing)),actividad:txt(g(r,C.act)),area:txt(g(r,C.area)),bloque:txt(g(r,C.blq))||txt(g(r,C.ofi)),supervisor:txt(g(r,C.sup)),tecnico:txt(g(r,C.tec)),genero:up(g(r,C.gen)).slice(0,1),
+        tallas:Object.fromEntries(Object.entries(C.tl).map(([k,i])=>[k,txt(g(r,i)).toUpperCase()])),estado:esRet?'retirado':'activo'};
+      if(esRet){o.salida=salida;o.motivoSalida=txt(g(r,C.mot))}else{o.salida='';o.motivoSalida=''}
+      const t=upsert(o);if(esRet)R.ret++;
+      const cs=txt(g(r,C.capsso));
+      if(cs){const fecha=parseFecha(g(r,C.capsso))||parseFecha(cs.replace(/^\D+/,''));const cap=/DRENCH/i.test(cs)?'drench':'fito';
+        if(CA(cap)&&!S.capReg.some(x=>x.trabId===t.id&&x.capId===cap&&x.importado)){S.capReg.push({id:uid(),trabId:t.id,capId:cap,fecha,nota:'Matriz: '+cs,importado:true});R.caps++}}
+    }
+  }
+  // PASIVOS (historial de salidas)
+  {const h=hojaTabla(wb,'PASIVOS',['cedula','nombres y apellidos']);if(h){R.hojas.push('PASIVOS');
+    const C={cod:h.col('codigo'),ced:h.col('cedula'),nom:h.col('nombres y apellidos'),ing:h.col('fec.ing'),area:h.col('area'),blq:h.col('bloque'),ofi:h.col('oficina'),sup:h.col('supervisor a cargo'),sal:h.col('fecha de salida'),mot:h.col('motivo')};
+    const g=(r,i)=>i>=0?r[i]:'';
+    for(const r of h.data){const nombre=txt(g(r,C.nom)).toUpperCase();if(!nombre)continue;
+      const o={codigo:txt(g(r,C.cod)).toUpperCase(),cedula:cedNorm(g(r,C.ced)),nombre,ingreso:parseFecha(g(r,C.ing)),area:txt(g(r,C.area)),bloque:txt(g(r,C.blq)),actividad:txt(g(r,C.blq))||txt(g(r,C.ofi)),supervisor:txt(g(r,C.sup)),estado:'retirado',salida:parseFecha(g(r,C.sal)),motivoSalida:txt(g(r,C.mot))};
+      const ya=buscar(o.cedula,o.codigo,o.nombre);if(ya&&vistos.has(ya.id))continue;
+      upsert(o,{retirado:true});R.ret++}}}
+  // PERSONAL ADMINISTRATIVO
+  {const h=hojaTabla(wb,'PERSONAL ADMINISTRATIVO',['cedula','trabajador']);if(h){R.hojas.push('PERSONAL ADMINISTRATIVO');
+    const C={cod:h.col('codigo'),ced:h.col('cedula'),nom:h.col('trabajador'),ing:h.col('fecha_ingreso'),car:h.col('cargo'),area:h.col('area_c'),gen:h.col('genero')};const g=(r,i)=>i>=0?r[i]:'';
+    for(const r of h.data){const nombre=txt(g(r,C.nom)).toUpperCase();if(!nombre)continue;
+      const ya=buscar(cedNorm(g(r,C.ced)),txt(g(r,C.cod)).toUpperCase(),nombre);if(ya&&vistos.has(ya.id))continue;
+      const t=upsert({codigo:txt(g(r,C.cod)).toUpperCase(),cedula:cedNorm(g(r,C.ced)),nombre,ingreso:parseFecha(g(r,C.ing)),actividad:txt(g(r,C.car)),area:txt(g(r,C.area)),genero:up(g(r,C.gen)).slice(0,1)==='F'?'M':'H',estado:'activo'});
+      if(!t.puestoManual)t.puestoId='admin';R.adm++}}}
+  // ROTACION FITO
+  {const h=hojaTabla(wb,'ROTACION FITO',['actividad','fecha ingreso al area']);if(h){R.hojas.push('ROTACION FITO');
+    const C={cod:h.col('codigo'),ced:h.col('c.i','cedula'),nom:h.col('nombres'),act:h.col('actividad'),ingA:h.col('fecha ingreso al area'),cam:h.col('fecha cambio')};const g=(r,i)=>i>=0?r[i]:'';
+    for(const r of h.data){const nombre=txt(g(r,C.nom)).toUpperCase();if(!nombre)continue;
+      const t=buscar(cedNorm(g(r,C.ced)),txt(g(r,C.cod)).toUpperCase(),nombre)||porNombre(nombre);if(!t)continue;
+      if(!t.actividad||!esFumig(t))t.actividad=txt(g(r,C.act));if(!t.puestoManual)t.puestoId=asignarPuesto([txt(g(r,C.act))]);
+      const ia=parseFecha(g(r,C.ingA));if(ia)t.inicioPuesto=ia;
+      const cam=g(r,C.cam);if(/definitiv/i.test(String(cam))){t.rotDefinitivo=true;t.fechaCambio=''}else{const fc=parseFecha(cam);if(fc){t.fechaCambio=fc;t.rotDefinitivo=false}}
+      R.fito++}}}
+  // Capacitación SSO (fitosanidad: módulo, capacitación, EPP inicial)
+  {const h=hojaTabla(wb,'Capacitación SSO',['nomina actual','puesto de trabajo']);if(h){R.hojas.push('Capacitación SSO');
+    const C={nom:h.col('nomina actual'),mod:h.col('area'),cap:h.col('fecha capacitacion'),ini:h.col('epps inicial'),epp:h.col('fecha de epps'),rot:h.col('fecha de rotacion')};const g=(r,i)=>i>=0?r[i]:'';
+    for(const r of h.data){const nombre=txt(g(r,C.nom)).toUpperCase();if(!nombre)continue;const t=porNombre(nombre);if(!t)continue;
+      const mod=txt(g(r,C.mod)).toUpperCase();if(mod)t.modulo=mod;
+      const fc=parseFecha(g(r,C.cap));if(fc&&!S.capReg.some(x=>x.trabId===t.id&&x.capId==='fito'&&x.fecha===fc)){S.capReg.push({id:uid(),trabId:t.id,capId:'fito',fecha:fc,nota:'Matriz Capacitación SSO',importado:true});R.caps++}
+      const fr=parseFecha(g(r,C.rot));if(fr&&!t.fechaCambio&&!t.rotDefinitivo)t.fechaCambio=fr;
+      const p=PU(t.puestoId);
+      for(const[ci,mot]of[[C.ini,'Kit inicial (matriz)'],[C.epp,'Cambio (matriz)']]){const fe=parseFecha(g(r,ci));if(!fe||!p)continue;
+        p.epps.filter(pe=>EP(pe.eppId)?.tipo==='epp').forEach(pe=>{if(S.entregas.some(x=>x.trabId===t.id&&x.eppId===pe.eppId&&x.fecha===fe))return;const e=EP(pe.eppId),tl=e.talla?tallaDe(t,e):'';S.entregas.push({id:uid(),trabId:t.id,eppId:pe.eppId,fecha:fe,cant:pe.cant,talla:tl==='S/T'?'':tl,motivo:mot,importado:true});R.eppImp++})}
+    }}}
+  // Brigadas, COPASHT y comités
+  const ponerRol=(t,rol)=>{if(!t)return;t.roles=t.roles||[];if(!t.roles.includes(rol)){t.roles.push(rol);R.roles++}};
+  S.trab.forEach(t=>t.roles=(t.roles||[]).filter(r=>!/^(Brigada|COPASHT|Comité)/.test(r)));
+  {const n=wb.SheetNames.find(x=>norm(x)==='brigadas');if(n){R.hojas.push('BRIGADAS');let brig='',ni=-1,ci=-1;
+    for(const r of XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,defval:''})){
+      const b=r.map(txt).find(c=>/^BRIGADA DE/i.test(c));if(b){brig=b.replace(/^BRIGADA DE (MANEJO DE )?/i,'').replace(/\s+/g,' ').trim();ni=ci=-1;continue}
+      const h=r.map(norm);if(h.some(c=>c.startsWith('nombre y apellido'))){ni=h.findIndex(c=>c.startsWith('nombre y apellido'));ci=h.indexOf('codigo');continue}
+      if(!brig||ni<0)continue;const nm=txt(r[ni]);if(!nm)continue;
+      const cod=ci>=0?txt(r[ci]).toUpperCase():'';const t=(cod&&porCod[cod])||porNombre(nm);
+      ponerRol(t,`Brigada ${brig.toLowerCase()}${r.some(c=>/Jefe de Brigada/i.test(txt(c)))?' (jefe)':''}`)}}}
+  {const h=hojaTabla(wb,'COPASHT',['apellidos y nombres','funcion']);if(h){R.hojas.push('COPASHT');const ni=h.col('apellidos y nombres'),fi=h.col('funcion');
+    h.data.forEach(r=>{const nm=txt(r[ni]);if(nm&&!/APELLIDOS/i.test(nm))ponerRol(porNombre(nm),'COPASHT – '+txt(r[fi]).toLowerCase())})}}
+  {const h=hojaTabla(wb,'COMITES',['nombre','comite']);if(h){R.hojas.push('COMITES');const ni=h.col('nombre'),ci=h.col('comite');
+    h.data.forEach(r=>{const nm=txt(r[ni]);if(nm)ponerRol(porNombre(nm),'Comité '+txt(r[ci]).toLowerCase())})}}
+  if(!R.hojas.length){alert('No se encontraron hojas reconocibles (ACTIVOS, PASIVOS…).');return}
+  S.cfg.importado=hoy()+' · '+f.name;save();render();
+  const act=S.trab.filter(activo).length;
+  alert(`Importación lista ✔\n\nHojas leídas: ${R.hojas.join(', ')}\n\n• Activos en la app: ${act}\n• Personas nuevas: ${R.nuevos} · actualizadas: ${R.act}\n• Retirados (historial): ${R.ret}\n• Administrativos: ${R.adm}\n• Fumigación actualizada: ${R.fito}\n• Capacitaciones importadas: ${R.caps}\n• Entregas de EPP importadas: ${R.eppImp}\n• Brigadas/comités: ${R.roles}\n\nNo se importaron sueldos, cuentas, bancos, correos, teléfonos, direcciones, etnia ni datos médicos.`);
+}
+
+render();bloquear();
+</script>
+</body>
+</html>
