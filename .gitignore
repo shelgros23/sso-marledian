@@ -1,0 +1,7 @@
+# Este repositorio es público: nunca subir datos de trabajadores
+*.xlsx
+*.xls
+*.csv
+*.json
+!app/manifest.webmanifest
+.claude/
