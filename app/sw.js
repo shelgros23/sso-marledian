@@ -1,6 +1,6 @@
 // Guarda la app en el celular para que funcione sin internet.
 // Al publicar una versión nueva, cambie el número de CACHE.
-const CACHE = 'sso-denmar-v2';
+const CACHE = 'sso-denmar-v3';
 const FILES = ['./', 'index.html', 'zxing.min.js', 'xlsx.full.min.js','manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
